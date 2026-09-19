@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-bright": "#f6fbf5", "secondary-container": "#fed488", "primary-fixed-dim": "#a5d0bc", "on-secondary-fixed-variant": "#5d4201", "surface-tint": "#3f6656", "surface-container": "#ebefea", "secondary-fixed": "#ffdea5", "on-primary-fixed": "#002116", "on-secondary-container": "#785a1a", "primary": "#002217", "inverse-primary": "#a5d0bc", "surface-container-lowest": "#ffffff", "surface-container-high": "#e5e9e4", "surface-container-low": "#f0f5f0", "secondary": "#775a19", "error": "#ba1a1a", "on-tertiary-container": "#6ea48c", "surface-variant": "#dfe4df", "tertiary": "#002216", "inverse-on-surface": "#edf2ed", "on-surface-variant": "#414844", "on-secondary": "#ffffff", "error-container": "#ffdad6", "surface-dim": "#d7dbd6", "inverse-surface": "#2c322e", "on-primary-container": "#79a28f", "outline": "#717974", "primary-fixed": "#c1ecd7", "on-primary": "#ffffff", "on-background": "#181d1a", "on-error-container": "#93000a", "on-tertiary-fixed-variant": "#19503c", "secondary-fixed-dim": "#e9c176", "primary-container": "#0f382a", "on-surface": "#181d1a", "on-secondary-fixed": "#261900", "tertiary-container": "#003927", "on-error": "#ffffff", "surface-container-highest": "#dfe4df", "on-tertiary-fixed": "#002115", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#9bd2b8", "tertiary-fixed": "#b6efd3", "background": "#f6fbf5", "surface": "#f6fbf5", "outline-variant": "#c1c8c3", "on-primary-fixed-variant": "#274e3f" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-xs": "0.25rem", "space-sm": "0.5rem", "margin-tablet": "2rem", "gutter": "1rem", "space-md": "1rem", "margin": "1.25rem", "space-xl": "2.5rem", "gutter-tablet": "1.5rem", "space-lg": "1.5rem" }, fontFamily: { "display-lg": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "display-lg-mobile": ["Playfair Display"], "label-sm": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "title-lg": ["Plus Jakarta Sans"], "headline-sm": ["Playfair Display"], "label-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"] }, fontSize: { "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "title-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }] } } } }</script></head><body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="Geminiflo_ Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VByv68kwYlaj-PzYZczAmmghFM7ptViHiiXJ_wXIJ41Azq5lLGkrF7k40pAnRoLMflHbvtSAVHyz7eXvLGX-dC33oLzj4wOAoOdm_QI_tU9e5MvLUODeZIQuc65b7LKsyEYO2gLJpOy5SDLKbVriexiDQXGCnDi-LCjDphWVHsHmTkTiOKJ6FmIJ147LV0iZdpo_p3xJHeCb-MTPtqqVbjbPcVmHgEKeEuEw1_G_PRm5HWCpLG6cOGuA"/><div class="flex flex-col"><span class="font-display-lg-mobile text-headline-sm text-primary tracking-tight leading-tight">Geminiflo_</span><span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Penyewa Katalog</span></div></div><div class="flex items-center gap-space-sm"><div class="inline-flex items-center gap-1 bg-surface-container px-2.5 py-1 rounded-full text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-secondary">swap_horiz</span><span class="font-label-sm text-label-sm font-semibold tracking-wide text-primary">Penyewa</span></div><button aria-label="Notifikasi" class="relative min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-secondary ring-2 ring-surface"></span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_2px_6px_rgba(0,34,23,0.15)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface flex-grow"><div class="flex flex-col w-full">
+<!-- Interactive Search & Filter Deck -->
+<section class="px-margin pt-space-md pb-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="relative flex-1 flex items-center bg-surface-container-lowest rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-outline ml-3 text-[20px]">search</span>
+<input class="w-full bg-transparent py-3 px-2 font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none" id="searchInput" placeholder="Cari tema, bunga, atau ukuran..." type="text"/>
+<button aria-label="Hapus pencarian" class="hidden pr-3 text-outline hover:text-on-surface" id="clearSearchBtn">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</button>
+</div>
+<button aria-label="Filter Lengkap" class="flex items-center justify-center min-w-[48px] h-[48px] bg-primary text-on-primary rounded-xl shadow-sm active:scale-95 transition-transform" id="filterModalTrigger">
+<span class="material-symbols-outlined text-[22px]">tune</span>
+</button>
+</div>
+<!-- Category Pill Horizontal Carousel -->
+<div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar py-1">
+<button class="category-pill whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md bg-primary text-on-primary transition-all" data-category="all">
+        Semua Kategori
+      </button>
+<button class="category-pill whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-category="pernikahan">
+        Pernikahan
+      </button>
+<button class="category-pill whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-category="duka">
+        Duka Cita
+      </button>
+<button class="category-pill whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-category="opening">
+        Grand Opening
+      </button>
+<button class="category-pill whitespace-nowrap px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-category="wisuda">
+        Wisuda
+      </button>
+</div>
+<!-- Quick Status Filter Pills -->
+<div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar pt-0.5">
+<button class="status-filter-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container-highest text-primary font-semibold transition-all" data-status="all">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+        Semua Status
+      </button>
+<button class="status-filter-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant transition-all" data-status="available">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+        Tersedia Sekarang
+      </button>
+<button class="status-filter-pill flex items-center gap-1.5 px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant transition-all" data-status="limited">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed-dim"></span>
+        Slot Terbatas
+      </button>
+</div>
+</section>
+<!-- Interactive Date Availability Sheet Bar -->
+<section class="px-margin my-space-sm">
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider block">Tanggal Acara</span>
+<button class="flex items-center gap-1 font-title-md text-title-md text-primary text-left" id="dateSelectorBtn">
+<span>Sabtu, 26 Okt 2024</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">expand_more</span>
+</button>
+</div>
+</div>
+<button class="px-3 py-1.5 bg-surface-container-lowest text-primary rounded-lg font-label-md text-label-md shadow-sm active:scale-95 transition-all" id="openCalendarQuick">
+          Ubah
+        </button>
+</div>
+<!-- Live Slot Status Notice Box -->
+<div class="flex items-center justify-between bg-surface-container-lowest px-3.5 py-2.5 rounded-lg shadow-sm">
+<div class="flex items-center gap-2.5">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary-container"></span>
+</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="text-primary font-semibold">12 dari 15</strong> Papan Siap Disewa
+          </span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-bold">
+          80% Slot
+        </span>
+</div>
+</div>
+</section>
+<!-- Sorting & View Controls -->
+<section class="px-margin mt-space-xs mb-space-sm flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">
+      Menampilkan <strong class="text-primary" id="productCount">3</strong> Model Papan
+    </span>
+<div class="flex items-center gap-1">
+<span class="font-label-sm text-label-sm text-outline">Urutkan:</span>
+<select class="bg-transparent font-label-md text-label-md text-primary font-semibold focus:outline-none cursor-pointer" id="sortSelector">
+<option value="popular">Terpopuler</option>
+<option value="lowest">Termurah</option>
+<option value="size">Ukuran Terbesar</option>
+</select>
+</div>
+</section>
+<!-- Catalog Cards Section -->
+<section class="px-margin flex flex-col gap-space-md pb-space-lg" id="productGrid">
+<!-- Product 1: Botanical Classic Maroon Gold (Pernikahan) -->
+<article class="catalog-card group bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col transition-all duration-300 hover:shadow-md" data-category="pernikahan" data-price="800000" data-size="2.4" data-status="available">
+<div class="relative w-full aspect-[4/3] overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Luxurious Indonesian ceremonial flower board (papan bunga) crafted for an upscale wedding. Deep velvet maroon backdrop with opulent botanical arches, natural fresh red roses, white calla lilies, and champagne gold artificial floral accents on a solid polished mahogany wood stand. Cinematic soft wedding hall light, pristine composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXfGGt32aewxbwd5_erjfqJ-77xvNShvfPnfaX5uboihzBPr3Y6EiFLaIlI-QF_zIJ0ij2KSzIpr_MLcicKkMtDLxroeguRMhWOCaF9tJij_MrlDP91ygln2D0rjzEYrviE-W8PRZD5oj2HAUeS4gZOK6X1JyXk3O8h6zOone61o3rv8QjePsmyiRjOiBjkGXUKHq0F8E3nqU1XQqrxExq2fpssykow7IdUFc0Z5kkCN2RUJdMt0w"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent to-black/20"></div>
+<!-- Category Badge -->
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full font-label-sm text-label-sm text-primary font-bold shadow-sm">
+          Pernikahan
+        </span>
+<!-- Availability Badge -->
+<div class="absolute top-3 right-3 flex items-center gap-1.5 bg-surface-container-lowest/95 backdrop-blur-md px-2.5 py-1 rounded-full shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-label-sm text-label-sm font-bold text-primary">Tersedia</span>
+</div>
+<!-- Dimension Tag overlay -->
+<div class="absolute bottom-3 left-3 flex items-center gap-1 bg-primary-container/85 backdrop-blur-sm text-on-primary px-2.5 py-0.5 rounded-full font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px]">straighten</span>
+<span>2.0m x 1.2m</span>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-space-sm">
+<div class="flex flex-col">
+<h2 class="font-headline-sm text-headline-sm text-primary tracking-tight">
+            Botanical Classic Maroon Gold
+          </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">
+            Bunga Segar Kombinasi Artifisial Premium, Kaki Kayu Solid dengan aksen ukir champage.
+          </p>
+</div>
+<!-- Material specs bullet -->
+<div class="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-surface-container-low font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-[16px]">local_florist</span>
+<span class="truncate">Mawar Merah, Caspea &amp; Lilin Gold</span>
+</div>
+<div class="flex items-baseline justify-between pt-1">
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase block">Biaya Rental</span>
+<div class="flex items-baseline gap-1">
+<span class="font-title-lg text-title-lg text-primary font-bold">Rp 800.000</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 24 jam</span>
+</div>
+</div>
+<button class="min-h-[44px] px-4 rounded-xl bg-primary text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform" onclick="selectProduct('Botanical Classic Maroon Gold', 800000)">
+<span>Detail &amp; Slot</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product 2: Serenity Pure White Sympathy (Duka Cita) -->
+<article class="catalog-card group bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col transition-all duration-300 hover:shadow-md" data-category="duka" data-price="650000" data-size="3.3" data-status="limited">
+<div class="relative w-full aspect-[4/3] overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Solemn Indonesian condolence floral tribute board with pristine white chrysanthemums, pure white calla lilies, and cascading white roses on deep charcoal felt with sage botanical trims. Elegantly placed on solid wooden tripod easel under gentle morning soft diffused outdoor lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiwJn1ZMyC-Q0AomEp03x1wT5sD0W9PRPezNQhkKbL_fVOVtTSYkk-IXE7BYIAi52FsPNAjk-6_ycdfJ5BLa2IOFCdPmmzfMuKtxOEHQDVrkzB6N0krTnD_cRkAUphcFLoZdpcXgI27DnOXw4qcPhUZaI18pREGaEwaFNoK4cHgWqGdxAx-G81kCmuqjR5YyZwG-8okhUV4hdqvk0lqjWAFJmviZfjKu_mgtvUMJeHJ_QxJPUjLso"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent to-black/20"></div>
+<!-- Category Badge -->
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full font-label-sm text-label-sm text-primary font-bold shadow-sm">
+          Duka Cita
+        </span>
+<!-- Availability Badge (Limited) -->
+<div class="absolute top-3 right-3 flex items-center gap-1.5 bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm font-bold">Sisa 1 Slot</span>
+</div>
+<!-- Dimension Tag overlay -->
+<div class="absolute bottom-3 left-3 flex items-center gap-1 bg-primary-container/85 backdrop-blur-sm text-on-primary px-2.5 py-0.5 rounded-full font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px]">straighten</span>
+<span>2.2m x 1.5m</span>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-space-sm">
+<div class="flex flex-col">
+<h2 class="font-headline-sm text-headline-sm text-primary tracking-tight">
+            Serenity Pure White Sympathy
+          </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">
+            Rangkaian krisan segar pilihan, lily putih beraroma lembut, dan mawar putih penghormatan tulus.
+          </p>
+</div>
+<!-- Material specs bullet -->
+<div class="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-surface-container-low font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-[16px]">eco</span>
+<span class="truncate">100% Bunga Segar Segar Datang Subuh</span>
+</div>
+<div class="flex items-baseline justify-between pt-1">
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase block">Biaya Rental</span>
+<div class="flex items-baseline gap-1">
+<span class="font-title-lg text-title-lg text-primary font-bold">Rp 650.000</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 24 jam</span>
+</div>
+</div>
+<button class="min-h-[44px] px-4 rounded-xl bg-primary text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform" onclick="selectProduct('Serenity Pure White Sympathy', 650000)">
+<span>Detail &amp; Slot</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product 3: Golden Empire Ribbon Arch (Grand Opening) -->
+<article class="catalog-card group bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col opacity-90 transition-all duration-300" data-category="opening" data-price="1200000" data-size="4.5" data-status="unavailable">
+<div class="relative w-full aspect-[4/3] overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover grayscale-[35%]" data-alt="Grand double-width ceremonial flower board for corporate grand opening event. Vibrant emerald velvet backdrop surrounded by sculptural golden monstera leaf arrangements, orange birds of paradise, yellow oncidium orchids, and large silk ceremonial banner ribbons. Bright celebratory daytime lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgB9sSzfkYMHlgMEbdRKfak1pGBj5WSUECzbli5D0dmHHdN_QjQx8aHpws_0oXqWkAzf2nPRsYxfPrteeSsiL1zZ9-E5rpT_ej6gw20coMuR_T4Zsu1_i3OFc2vbBZW3fePwvxqpBhQaLPG7eeDK6t2b6cnOthRWAps97JOZ4iMvz7S6raujM_wcIV3W-UQCSBnaBOFVsj-eueMR4MPvviygihlo5jHn5HiC8D_7YqXw21FujDKDw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40"></div>
+<!-- Category Badge -->
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-3 py-1 rounded-full font-label-sm text-label-sm text-primary font-bold shadow-sm">
+          Grand Opening
+        </span>
+<!-- Availability Badge (Unavailable) -->
+<div class="absolute top-3 right-3 flex items-center gap-1.5 bg-error-container text-on-error-container px-2.5 py-1 rounded-full shadow-sm">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-label-sm text-label-sm font-bold">Penuh di Tgl Ini</span>
+</div>
+<!-- Dimension Tag overlay -->
+<div class="absolute bottom-3 left-3 flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-sm text-primary px-2.5 py-0.5 rounded-full font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[13px]">aspect_ratio</span>
+<span>2.5m x 1.8m (Double Board)</span>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-primary tracking-tight">
+              Golden Empire Ribbon Arch
+            </h2>
+<span class="font-label-sm text-label-sm px-2 py-0.5 bg-surface-container-high text-on-surface-variant rounded">Double Size</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">
+            Struktur megah ganda untuk peresmian gedung dan kantor pusat. Orkid oncidium emas dan pita satin premium.
+          </p>
+</div>
+<div class="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-surface-container font-label-sm text-label-sm text-error">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span class="truncate">Sudah dibooking oleh PT Nusantara Bank</span>
+</div>
+<div class="flex items-baseline justify-between pt-1">
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase block">Biaya Rental</span>
+<div class="flex items-baseline gap-1">
+<span class="font-title-lg text-title-lg text-outline font-bold">Rp 1.200.000</span>
+<span class="font-body-sm text-body-sm text-outline">/ 24 jam</span>
+</div>
+</div>
+<button class="min-h-[44px] px-4 rounded-xl bg-surface-container text-outline font-label-md text-label-md flex items-center gap-1.5 cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[16px]">event_busy</span>
+<span>Slot Penuh</span>
+</button>
+</div>
+</div>
+</article>
+</section>
+<!-- Bottom Filter Chips Toolbar for Quick Re-sort -->
+<section class="px-margin mb-space-lg flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Pintasan Filter Cepat</span>
+<div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar">
+<button class="fast-chip whitespace-nowrap flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md active:bg-primary active:text-on-primary transition-colors" onclick="applyFastSort('cheapest')">
+<span class="material-symbols-outlined text-[16px] text-secondary">payments</span>
+<span>Termurah</span>
+</button>
+<button class="fast-chip whitespace-nowrap flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md transition-colors" onclick="applyFastSort('popular')">
+<span class="material-symbols-outlined text-[16px] text-secondary-fixed">auto_awesome</span>
+<span>Terpopuler</span>
+</button>
+<button class="fast-chip whitespace-nowrap flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md active:bg-primary active:text-on-primary transition-colors" onclick="applyFastSort('size')">
+<span class="material-symbols-outlined text-[16px] text-secondary">aspect_ratio</span>
+<span>Ukuran Terbesar</span>
+</button>
+</div>
+</section>
+<!-- Interactive Date Picker Modal Sheet (Hidden by Default) -->
+<div class="fixed inset-0 z-50 bg-primary/40 backdrop-blur-sm hidden flex-col justify-end" id="calendarModal">
+<div class="bg-surface-container-lowest rounded-t-3xl p-margin shadow-2xl flex flex-col gap-space-md max-h-[85vh] overflow-y-auto">
+<div class="flex items-center justify-between pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[22px]">calendar_month</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Pilih Tanggal Pengiriman</h3>
+</div>
+<button aria-label="Tutup" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant" id="closeCalendarBtn">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Month Navigation -->
+<div class="flex items-center justify-between bg-surface-container-low px-4 py-2.5 rounded-xl">
+<button class="text-primary hover:text-secondary"><span class="material-symbols-outlined">chevron_left</span></button>
+<span class="font-title-md text-title-md text-primary font-semibold">Oktober 2024</span>
+<button class="text-primary hover:text-secondary"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+<!-- Mini Day Calendar -->
+<div class="grid grid-cols-7 gap-1 text-center font-label-sm text-label-sm">
+<span class="text-outline py-1">Min</span>
+<span class="text-outline py-1">Sen</span>
+<span class="text-outline py-1">Sel</span>
+<span class="text-outline py-1">Rab</span>
+<span class="text-outline py-1">Kam</span>
+<span class="text-outline py-1">Jum</span>
+<span class="text-outline py-1">Sab</span>
+<!-- Days -->
+<span class="text-surface-dim py-2">20</span>
+<span class="text-surface-dim py-2">21</span>
+<span class="text-surface-dim py-2">22</span>
+<button class="date-cell py-2 rounded-lg hover:bg-surface-container text-on-surface">23</button>
+<button class="date-cell py-2 rounded-lg hover:bg-surface-container text-on-surface">24</button>
+<button class="date-cell py-2 rounded-lg hover:bg-surface-container text-on-surface relative">
+          25
+          <span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full"></span>
+</button>
+<!-- Selected Date -->
+<button class="date-cell py-2 rounded-lg bg-primary text-on-primary font-bold shadow-sm relative">
+          26
+          <span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary-fixed rounded-full"></span>
+</button>
+<button class="date-cell py-2 rounded-lg hover:bg-surface-container text-on-surface">27</button>
+<button class="date-cell py-2 rounded-lg hover:bg-surface-container text-on-surface">28</button>
+<button class="date-cell py-2 rounded-lg hover:bg-surface-container text-on-surface">29</button>
+<button class="date-cell py-2 rounded-lg hover:bg-surface-container text-on-surface">30</button>
+<button class="date-cell py-2 rounded-lg hover:bg-surface-container text-on-surface">31</button>
+<span class="text-surface-dim py-2">1</span>
+<span class="text-surface-dim py-2">2</span>
+</div>
+<div class="bg-surface-container-low p-3 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="font-body-sm text-body-sm text-on-surface">Estimasi Pengantaran: Siang (11.00 - 13.00)</span>
+</div>
+</div>
+<button class="w-full py-3.5 bg-primary text-on-primary rounded-xl font-title-md text-title-md shadow-md active:scale-98 transition-transform" id="applyDateBtn">
+        Terapkan Tanggal Pilihan
+      </button>
+</div>
+</div>
+<!-- Booking Details Drawer / Modal Alert Preview -->
+<div class="fixed inset-0 z-50 bg-primary/40 backdrop-blur-sm hidden flex-col justify-end" id="bookingDetailModal">
+<div class="bg-surface-container-lowest rounded-t-3xl p-margin shadow-2xl flex flex-col gap-space-md">
+<div class="w-12 h-1 bg-surface-container-high rounded-full mx-auto mb-1"></div>
+<div class="flex items-center justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-secondary uppercase">Konfirmasi Cek Slot</span>
+<h3 class="font-headline-sm text-headline-sm text-primary" id="modalProductName">Nama Papan</h3>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant" onclick="closeProductModal()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Inscription Preview Mockup Component -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">edit_note</span>
+          Pratinjau Format Ucapan (Standar Papan):
+        </span>
+<div class="bg-primary-container p-3 rounded-lg text-center shadow-inner text-on-primary">
+<p class="font-label-sm text-label-sm text-secondary-fixed uppercase tracking-widest">SELAMAT &amp; SUKSES</p>
+<p class="font-headline-sm text-headline-sm font-bold text-on-primary mt-0.5">Atas Pembukaan Kantor Baru</p>
+<p class="font-body-sm text-body-sm text-surface-container-highest mt-1 italic">Dari: Rekan Kerja &amp; Sahabat</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div>
+<span class="font-label-sm text-label-sm text-outline">Total Sewa</span>
+<p class="font-title-lg text-title-lg text-primary font-bold" id="modalProductPrice">Rp 0</p>
+</div>
+<button class="px-6 py-3 bg-primary text-on-primary rounded-xl font-title-md text-title-md shadow-md active:scale-95 transition-transform flex items-center gap-2" onclick="proceedToCustomization()">
+<span>Lanjut Kustomisasi</span>
+<span class="material-symbols-outlined text-[18px]">brush</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+    // Filtering Logic
+    const categoryButtons = document.querySelectorAll('.category-pill');
+    const statusButtons = document.querySelectorAll('.status-filter-pill');
+    const catalogCards = document.querySelectorAll('.catalog-card');
+    const productCountEl = document.getElementById('productCount');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+    let currentCategory = 'all';
+    let currentStatus = 'all';
+    let currentSearchTerm = '';
+
+    function filterCards() {
+      let visibleCount = 0;
+      catalogCards.forEach(card => {
+        const cardCat = card.getAttribute('data-category');
+        const cardStat = card.getAttribute('data-status');
+        const cardText = card.innerText.toLowerCase();
+
+        const matchCat = (currentCategory === 'all' || cardCat === currentCategory);
+        const matchStat = (currentStatus === 'all' || cardStat === currentStatus);
+        const matchSearch = (currentSearchTerm === '' || cardText.includes(currentSearchTerm));
+
+        if (matchCat && matchStat && matchSearch) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+      productCountEl.innerText = visibleCount;
+    }
+
+    // Category button clicks
+    categoryButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        categoryButtons.forEach(b => {
+          b.classList.remove('bg-primary', 'text-on-primary');
+          b.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+        btn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        btn.classList.add('bg-primary', 'text-on-primary');
+
+        currentCategory = btn.getAttribute('data-category');
+        filterCards();
+      });
+    });
+
+    // Status button clicks
+    statusButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        statusButtons.forEach(b => {
+          b.classList.remove('bg-surface-container-highest', 'text-primary', 'font-semibold');
+          b.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+        btn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        btn.classList.add('bg-surface-container-highest', 'text-primary', 'font-semibold');
+
+        currentStatus = btn.getAttribute('data-status');
+        filterCards();
+      });
+    });
+
+    // Search handler
+    searchInput.addEventListener('input', (e) => {
+      currentSearchTerm = e.target.value.toLowerCase().trim();
+      if (currentSearchTerm.length > 0) {
+        clearSearchBtn.classList.remove('hidden');
+      } else {
+        clearSearchBtn.classList.add('hidden');
+      }
+      filterCards();
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      currentSearchTerm = '';
+      clearSearchBtn.classList.add('hidden');
+      filterCards();
+    });
+
+    // Sorting handling
+    const sortSelector = document.getElementById('sortSelector');
+    const productGrid = document.getElementById('productGrid');
+
+    function sortCatalog(criteria) {
+      const cards = Array.from(catalogCards);
+      cards.sort((a, b) => {
+        const priceA = parseInt(a.getAttribute('data-price') || '0', 10);
+        const priceB = parseInt(b.getAttribute('data-price') || '0', 10);
+        const sizeA = parseFloat(a.getAttribute('data-size') || '0');
+        const sizeB = parseFloat(b.getAttribute('data-size') || '0');
+
+        if (criteria === 'lowest' || criteria === 'cheapest') {
+          return priceA - priceB;
+        } else if (criteria === 'size') {
+          return sizeB - sizeA;
+        } else {
+          // popular: natural order
+          return 0;
+        }
+      });
+      cards.forEach(c => productGrid.appendChild(c));
+    }
+
+    sortSelector.addEventListener('change', (e) => {
+      sortCatalog(e.target.value);
+    });
+
+    function applyFastSort(type) {
+      sortCatalog(type);
+      document.querySelectorAll('.fast-chip').forEach(c => {
+        c.classList.remove('bg-primary', 'text-on-primary');
+        c.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+      });
+      event.currentTarget.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+      event.currentTarget.classList.add('bg-primary', 'text-on-primary');
+    }
+
+    // Modal Sheet Trigger
+    const calendarModal = document.getElementById('calendarModal');
+    const dateSelectorBtn = document.getElementById('dateSelectorBtn');
+    const openCalendarQuick = document.getElementById('openCalendarQuick');
+    const closeCalendarBtn = document.getElementById('closeCalendarBtn');
+    const applyDateBtn = document.getElementById('applyDateBtn');
+
+    function showCalendar() {
+      calendarModal.classList.remove('hidden');
+      calendarModal.classList.add('flex');
+    }
+    function hideCalendar() {
+      calendarModal.classList.add('hidden');
+      calendarModal.classList.remove('flex');
+    }
+
+    dateSelectorBtn.addEventListener('click', showCalendar);
+    openCalendarQuick.addEventListener('click', showCalendar);
+    closeCalendarBtn.addEventListener('click', hideCalendar);
+    applyDateBtn.addEventListener('click', hideCalendar);
+
+    // Product Detail Preview Modal
+    const bookingDetailModal = document.getElementById('bookingDetailModal');
+    const modalProductName = document.getElementById('modalProductName');
+    const modalProductPrice = document.getElementById('modalProductPrice');
+
+    function selectProduct(name, price) {
+      modalProductName.innerText = name;
+      modalProductPrice.innerText = 'Rp ' + price.toLocaleString('id-ID');
+      bookingDetailModal.classList.remove('hidden');
+      bookingDetailModal.classList.add('flex');
+    }
+
+    function closeProductModal() {
+      bookingDetailModal.classList.add('hidden');
+      bookingDetailModal.classList.remove('flex');
+    }
+
+    function proceedToCustomization() {
+      closeProductModal();
+      alert('Mengarahkan ke Formulir Perangkai Pita & Ucapan Geminiflo...');
+    }
+  </script>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,34,23,0.06)]" data-active-classes="text-primary font-bold"><div class="flex items-center justify-around h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-2 py-1 text-on-surface-variant transition-colors" data-path="penyewa-home" href="#"><span class="material-symbols-outlined text-[22px]">yard</span><span class="font-label-sm text-label-sm mt-0.5">Beranda</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-2 py-1 transition-colors text-primary font-bold" data-path="penyewa-katalog" href="#"><span class="material-symbols-outlined text-[22px]">storefront</span><span class="font-label-sm text-label-sm mt-0.5">Katalog</span></a><a class="relative flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-2 py-1 text-on-surface-variant transition-colors" data-path="penyewa-pesanan" href="#"><span class="material-symbols-outlined text-[22px]">receipt_long</span><span class="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-secondary"></span><span class="font-label-sm text-label-sm mt-0.5">Pesanan</span></a><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-2 py-1 text-on-surface-variant transition-colors" data-path="penyewa-profil" href="#"><span class="material-symbols-outlined text-[22px]">account_circle</span><span class="font-label-sm text-label-sm mt-0.5">Profil</span></a></div></nav></body></html>

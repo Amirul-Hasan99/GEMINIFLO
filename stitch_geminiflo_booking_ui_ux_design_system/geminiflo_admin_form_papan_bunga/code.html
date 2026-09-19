@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-bright": "#f6fbf5", "secondary-container": "#fed488", "primary-fixed-dim": "#a5d0bc", "on-secondary-fixed-variant": "#5d4201", "surface-tint": "#3f6656", "surface-container": "#ebefea", "secondary-fixed": "#ffdea5", "on-primary-fixed": "#002116", "on-secondary-container": "#785a1a", "primary": "#002217", "inverse-primary": "#a5d0bc", "surface-container-lowest": "#ffffff", "surface-container-high": "#e5e9e4", "surface-container-low": "#f0f5f0", "secondary": "#775a19", "error": "#ba1a1a", "on-tertiary-container": "#6ea48c", "surface-variant": "#dfe4df", "tertiary": "#002216", "inverse-on-surface": "#edf2ed", "on-surface-variant": "#414844", "on-secondary": "#ffffff", "error-container": "#ffdad6", "surface-dim": "#d7dbd6", "inverse-surface": "#2c322e", "on-primary-container": "#79a28f", "outline": "#717974", "primary-fixed": "#c1ecd7", "on-primary": "#ffffff", "on-background": "#181d1a", "on-error-container": "#93000a", "on-tertiary-fixed-variant": "#19503c", "secondary-fixed-dim": "#e9c176", "primary-container": "#0f382a", "on-surface": "#181d1a", "on-secondary-fixed": "#261900", "tertiary-container": "#003927", "on-error": "#ffffff", "surface-container-highest": "#dfe4df", "on-tertiary-fixed": "#002115", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#9bd2b8", "tertiary-fixed": "#b6efd3", "background": "#f6fbf5", "surface": "#f6fbf5", "outline-variant": "#c1c8c3", "on-primary-fixed-variant": "#274e3f" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-xs": "0.25rem", "space-sm": "0.5rem", "margin-tablet": "2rem", "gutter": "1rem", "space-md": "1rem", "margin": "1.25rem", "space-xl": "2.5rem", "gutter-tablet": "1.5rem", "space-lg": "1.5rem" }, fontFamily: { "display-lg": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "display-lg-mobile": ["Playfair Display"], "label-sm": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "title-lg": ["Plus Jakarta Sans"], "headline-sm": ["Playfair Display"], "label-md": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"] }, fontSize: { "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "title-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs"><button aria-label="Kembali" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-on-surface hover:text-primary transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><img alt="Geminiflo_ Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VByv68kwYlaj-PzYZczAmmghFM7ptViHiiXJ_wXIJ41Azq5lLGkrF7k40pAnRoLMflHbvtSAVHyz7eXvLGX-dC33oLzj4wOAoOdm_QI_tU9e5MvLUODeZIQuc65b7LKsyEYO2gLJpOy5SDLKbVriexiDQXGCnDi-LCjDphWVHsHmTkTiOKJ6FmIJ147LV0iZdpo_p3xJHeCb-MTPtqqVbjbPcVmHgEKeEuEw1_G_PRm5HWCpLG6cOGuA"/><h1 class="font-headline-sm text-headline-sm text-primary tracking-tight truncate ml-1">Admin Verifikasi Pembayaran</h1></div><div class="flex items-center gap-space-sm"><button aria-label="Bantuan atau Info" class="relative min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">info</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_2px_6px_rgba(0,34,23,0.15)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-surface flex-grow"><div class="flex flex-col w-full pb-32">
+<!-- Top Modal Context Sub-bar -->
+<div class="px-margin pt-space-sm pb-space-xs flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+        Mode Edit: PBN-RST-001
+      </span>
+</div>
+<button class="inline-flex items-center gap-1 text-secondary font-label-md text-label-md px-2.5 py-1 rounded-full bg-surface-container-low hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span>Duplikasi Baru</span>
+</button>
+</div>
+<!-- Header Text Context -->
+<div class="px-margin mt-space-xs mb-space-md">
+<h2 class="font-headline-md text-headline-md text-primary font-bold tracking-tight">Edit Papan Bunga</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Formulir inventaris armada, spesifikasi katalog, dan alokasi sewa harian.</p>
+</div>
+<form class="flex flex-col gap-space-lg px-margin" id="papanBungaForm" onsubmit="event.preventDefault();">
+<!-- 1. Media & Galeri Foto Section -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-[0_4px_20px_-2px_rgba(15,56,42,0.05)] flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">photo_library</span>
+<h3 class="font-title-md text-title-md text-primary">Foto Utama &amp; Galeri Armada</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-2 py-0.5 rounded-full">Rasio 4:3 (Maks 5MB)</span>
+</div>
+<!-- Main Photo Showcase with Editorial Frame -->
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-surface-container group">
+<img class="w-full h-full object-cover" data-alt="Exquisite artisanal Indonesian ceremonial flower board papan bunga featuring lush rustic white and dusty pink peonies, delicate eucalyptus, golden typography inscription, mounted on dark polished mahogany wooden tripod stand, gentle warm indoor studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg3cDSfEcqnkduY-AKTl5MaEOMoLnP8x6iTRqGt4vrc0FdHeZIliX7OGAPiVxlQ0P-h6UVw47yEaYdSLhZDphJsaK-_g2zv5AljqguT-jvkWeJuSGKKkW142PsTYD8xOAyZIpTdvEs3Kqe6o8d8cQG_HJUlSfmdzuFSKPSY2QAt90PTbqg8Vywec3Z1Nve6g3N7oO-tD1E-7EkjRnFI9t-yeoITR50ff-bJ7FJcBrKs20nS1QTjdY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-90 flex flex-col justify-end p-space-md">
+<div class="flex items-center justify-between text-on-primary">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary-fixed">Foto Katalog Utama</span>
+<p class="font-title-md text-title-md truncate">Rustic Peony Grand Deluxe</p>
+</div>
+<button aria-label="Ganti foto" class="min-w-[40px] min-h-[40px] rounded-full bg-surface-container-lowest text-primary flex items-center justify-center shadow-md active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Thumbnail Strip Gallery -->
+<div class="grid grid-cols-4 gap-space-xs pt-space-xs">
+<div class="relative aspect-square rounded-lg overflow-hidden bg-surface-container ring-2 ring-primary">
+<img class="w-full h-full object-cover" data-alt="Close up front view macro detail of handcrafted flower board lettering in champagne gold embossed acrylic surrounded by fresh pale blush peonies." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC58jkpUJpZMaeTeSS4GDdYy9IXcXp7BGiXzNWmKnFZr7PigVgr1WqZ0ywNyIIvyeLO_E0_1XvenJzDbEoeIn11JKd0j0hkC6wOtQBydgys7YFLsjq-GcpArAnvHxq41wr5fLQYKDFP0uvTZMawuY8qtHH7a1ZWITdvr3OCb1J7s2yNnkRShaVGnVkL7ZMSg0bT6zd-dyN-3a-AH45i7LQeh8_mjTueiuu343_9-seRtMh8oUSmgno"/>
+<span class="absolute bottom-1 left-1 bg-primary text-on-primary font-label-sm text-[8px] px-1 rounded">Depan</span>
+</div>
+<div class="relative aspect-square rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Artisanal macro embroidery and hand-stitched floral arrangement texture on velvet back panel for luxury flower board." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN2Gl1eCIhVTCAMxysUYtZqDdEqW3Q7P8gmXuKA_YYTPBxFCFtJi9rOfdipl9xiR-651hT95rGdp383DQZ6qhpCnjt4OeRrysrAAM4tCoBdf0eQDwKQlPt0I5OOSMfh1Rm5EfrLAoympFyMBGE6-niqab2lsQPObFPp_qgiO56FvCbPCXX-ecnE84ji1gt9qcHeQJnBNWFLBB3kzTXgRDNGqOonzoAMBF_tK9r1aZy1xoSm1lYMK4"/>
+<span class="absolute bottom-1 left-1 bg-surface-container-highest text-on-surface font-label-sm text-[8px] px-1 rounded">Detail Sulam</span>
+</div>
+<div class="relative aspect-square rounded-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Solid dark teak wooden tripod support legs of ceremonial wedding board standing securely on polished marble pavilion floor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5ZcIyTq4DOv31ZsHfNIrmDHH2HmK_71fLf8qJFJuIz8efkIGTSZ_Vb-T9u3otE39GGbzJtWQuFQEbJPx4hhJ8HxvEBuHHAPlLOLSui85Blp_tb8jJbHJ4uDx_UsnafUexR1avs8cxJ4ltM2vhzRl-Q9JjHlG72wPmXxUoVbJWSycNTeQZosEYDwnY8FLITiVeLNTWNzBmvW7eUBGJ1NOPFAP5ovbYFmy92hrez2aK-onnwVddj38"/>
+<span class="absolute bottom-1 left-1 bg-surface-container-highest text-on-surface font-label-sm text-[8px] px-1 rounded">Kaki Rangka</span>
+</div>
+<!-- Add Photo Slot -->
+<button class="aspect-square rounded-lg bg-surface-container-low flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-95" type="button">
+<span class="material-symbols-outlined text-[22px] text-primary">add_a_photo</span>
+<span class="font-label-sm text-[9px] mt-0.5">+ Foto</span>
+</button>
+</div>
+<button class="mt-space-xs w-full py-2.5 rounded-lg bg-surface-container-low text-primary font-label-lg text-label-lg flex items-center justify-center gap-2 hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+<span>Unggah Dokumen / Foto Baru</span>
+</button>
+</section>
+<!-- 2. Informasi Dasar Section -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-[0_4px_20px_-2px_rgba(15,56,42,0.05)] flex flex-col gap-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">info</span>
+<h3 class="font-title-md text-title-md text-primary">Spesifikasi &amp; Informasi Katalog</h3>
+</div>
+<!-- Nama Papan Bunga -->
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface font-medium flex items-center justify-between" for="namaPapan">
+<span>Nama Papan Bunga <span class="text-error">*</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Karakter: 28/60</span>
+</label>
+<input class="w-full h-12 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-secondary/40 transition-all" id="namaPapan" type="text" value="Rustic Botanical Peony Arch"/>
+</div>
+<!-- SKU & Kategori -->
+<div class="grid grid-cols-1 gap-space-md">
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Nomor Inventaris (SKU)</label>
+<div class="flex gap-2">
+<input class="flex-grow h-12 px-3 rounded-lg bg-surface-container-high text-on-surface font-mono font-body-md text-body-md tracking-wide" readonly="" type="text" value="PBN-RST-001"/>
+<button class="min-w-[48px] h-12 rounded-lg bg-surface-container-low text-primary flex items-center justify-center active:bg-surface-container-high" title="Generate Ulang SKU" type="button">
+<span class="material-symbols-outlined text-[20px]">autorenew</span>
+</button>
+</div>
+</div>
+<!-- Kategori Chips -->
+<div class="flex flex-col gap-2">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Kategori Acara / Tema <span class="text-error">*</span></label>
+<div class="flex flex-wrap gap-2">
+<button class="px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-primary text-on-primary flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">celebration</span>
+<span>Pernikahan</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container-high flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">storefront</span>
+<span>Grand Opening</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container-high flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">sentiment_dissatisfied</span>
+<span>Duka Cita</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container-high flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">school</span>
+<span>Wisuda &amp; Pelantikan</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Dimensi / Ukuran -->
+<div class="flex flex-col gap-2">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Dimensi Fisik Rangka <span class="text-error">*</span></label>
+<div class="grid grid-cols-2 gap-2">
+<label class="relative flex flex-col p-3 rounded-lg bg-surface-container-low has-[:checked]:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-title-sm font-semibold text-primary">Single Standard</span>
+<input checked="" class="accent-primary" name="ukuran" type="radio" value="single"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">2.0m × 1.5m</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium mt-0.5">Format Terlaris</span>
+</label>
+<label class="relative flex flex-col p-3 rounded-lg bg-surface-container-low has-[:checked]:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-title-sm font-semibold text-on-surface">Double Grand</span>
+<input class="accent-primary" name="ukuran" type="radio" value="double"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">2.5m × 1.8m</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">VIP Ceremonial</span>
+</label>
+<label class="relative flex flex-col p-3 rounded-lg bg-surface-container-low has-[:checked]:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-title-sm font-semibold text-on-surface">Portabel Akrilik</span>
+<input class="accent-primary" name="ukuran" type="radio" value="acrylic"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">1.8m × 1.2m</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Indoor Hotel</span>
+</label>
+<label class="relative flex flex-col p-3 rounded-lg bg-surface-container-low has-[:checked]:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-title-sm font-semibold text-on-surface">Kustom Pesanan</span>
+<input class="accent-primary" name="ukuran" type="radio" value="custom"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Sesuai Permintaan</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Fleksibel</span>
+</label>
+</div>
+</div>
+<!-- Material & Karakteristik -->
+<div class="flex flex-col gap-2">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Material Rangka &amp; Ornamen</label>
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span> Kayu Solid Jati Belada
+          </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span> Kain Beludru Dark Forest
+          </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span> Akrilik Emas Emboss
+          </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md">
+            + Tambah Spesifikasi
+          </span>
+</div>
+</div>
+</section>
+<!-- 3. Pengaturan Stok Fisik & Armada Gudang -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-[0_4px_20px_-2px_rgba(15,56,42,0.05)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">warehouse</span>
+<h3 class="font-title-md text-title-md text-primary">Stok Armada Gudang</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">
+          4 Siap Sewa
+        </span>
+</div>
+<!-- Stepper: Total Rangka Fisik -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
+<div>
+<h4 class="font-title-sm text-title-md text-on-surface">Total Unit Rangka Fisik</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Jumlah total kayu/besi yang dimiliki</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-lowest rounded-full p-1 shadow-sm">
+<button class="w-8 h-8 rounded-full bg-surface-container-low text-primary flex items-center justify-center active:scale-95" type="button">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<span class="font-title-md text-title-md font-bold px-2 text-primary">5</span>
+<button class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center active:scale-95" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+<!-- Input: Max Sewa Simultan -->
+<div class="grid grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Maks. Sewa Bersamaan</label>
+<div class="relative">
+<input class="w-full h-12 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/40" type="number" value="4"/>
+<span class="absolute right-3 top-3.5 font-label-md text-label-md text-on-surface-variant">Unit / hari</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Alokasi Rekondisi</label>
+<div class="relative">
+<input class="w-full h-12 px-3 rounded-lg bg-surface-container-high text-on-surface-variant font-body-md text-body-md" readonly="" type="text" value="1 Unit (Diperbaiki)"/>
+</div>
+</div>
+</div>
+<!-- Dropdown: Lokasi Default -->
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Lokasi Penyimpanan Default</label>
+<div class="relative">
+<select class="w-full h-12 px-3 pr-10 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-secondary/40">
+<option selected="">Gudang Utama Kebayoran Baru (Hub Pusat)</option>
+<option>Workshop &amp; Studio Cilandak Barat</option>
+<option>Depot Transit Kelapa Gading</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3.5 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</section>
+<!-- 4. Skema Harga & Ketentuan Biaya -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-[0_4px_20px_-2px_rgba(15,56,42,0.05)] flex flex-col gap-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">payments</span>
+<h3 class="font-title-md text-title-md text-primary">Skema Harga &amp; Durasi Sewa</h3>
+</div>
+<!-- Harga Sewa Pokok -->
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Biaya Sewa Pokok (per 24 Jam) <span class="text-error">*</span></label>
+<div class="relative">
+<span class="absolute left-3.5 top-3.5 font-title-md text-title-md font-bold text-primary">Rp</span>
+<input class="w-full h-12 pl-12 pr-3 rounded-lg bg-surface-container-low text-on-surface font-title-md text-title-md font-semibold focus:outline-none focus:ring-2 focus:ring-secondary/40" type="text" value="850.000"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Harga netto penyewaan untuk hari pertama termasuk stand kayu.</span>
+</div>
+<!-- Harga Perpanjangan -->
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Biaya Tambahan Hari Berikutnya</label>
+<div class="relative">
+<span class="absolute left-3.5 top-3.5 font-title-md text-title-md font-bold text-on-surface-variant">Rp</span>
+<input class="w-full h-12 pl-12 pr-3 rounded-lg bg-surface-container-low text-on-surface font-title-md text-title-md focus:outline-none focus:ring-2 focus:ring-secondary/40" type="text" value="400.000"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">+ Rp 400.000 untuk perpanjangan tiap 24 jam kedua/ketiga.</span>
+</div>
+<!-- Inklusi & Pengiriman Toggles -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px]">construction</span>
+<div>
+<p class="font-label-lg text-label-lg font-medium text-on-surface">Bongkar Pasang di Lokasi</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Termasuk tim penataan &amp; penjemputan armada</p>
+</div>
+</div>
+<!-- Custom Toggle Styled Without Border -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px]">local_shipping</span>
+<div>
+<p class="font-label-lg text-label-lg font-medium text-on-surface">Gratis Ongkir Radius 10 km</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Dari workshop terdekat ke venue acara</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- 5. Deskripsi & Ketentuan Rangkaian -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-[0_4px_20px_-2px_rgba(15,56,42,0.05)] flex flex-col gap-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">draw</span>
+<h3 class="font-title-md text-title-md text-primary">Deskripsi Katalog &amp; Komposisi Bunga</h3>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-lg text-label-lg text-on-surface font-medium" for="deskripsiKatalog">Deskripsi Publik untuk Pemesan</label>
+<textarea class="w-full p-3 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/40 leading-relaxed" id="deskripsiKatalog" rows="4">Rangkaian papan bunga pernikahan bertema botanical rustic dengan aksen bunga peony segar, mawar putih ivory, baby breath, dan semprotan dedaunan eucalyptus segar. Tulisan ucapan menggunakan teknik laser-cut akrilik emas timbul pada kanvas beludru emerald mewah.</textarea>
+</div>
+<!-- Garansi Kesegaran Badge -->
+<div class="p-3 rounded-lg bg-surface-container-low flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[22px] mt-0.5">verified</span>
+<div>
+<h4 class="font-label-lg text-label-lg font-bold text-primary">Garansi Segar &amp; Rapi 24 Jam</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Komposisi: 70% Bunga Potong Segar + 30% Aksen Artifisial Grade A untuk ketahanan suhu luar ruangan.</p>
+</div>
+</div>
+</section>
+<!-- 6. Visibilitas & Status Operasional -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-[0_4px_20px_-2px_rgba(15,56,42,0.05)] flex flex-col gap-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">toggle_on</span>
+<h3 class="font-title-md text-title-md text-primary">Visibilitas &amp; Status Operasional</h3>
+</div>
+<!-- Toggle: Tampilkan di Katalog -->
+<div class="flex items-center justify-between">
+<div>
+<p class="font-title-sm text-title-md font-semibold text-primary">Tampilkan di Katalog Publik</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Dapat dilihat &amp; dipilih langsung oleh penyewa aplikasi</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Toggle: Booking Instan -->
+<div class="flex items-center justify-between pt-space-xs">
+<div>
+<p class="font-title-sm text-title-md font-semibold text-on-surface">Terima Booking Otomatis</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Konfirmasi jadwal langsung tanpa verifikasi admin gudang</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Status Kesiapan Armada Radio Group -->
+<div class="flex flex-col gap-2 pt-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface font-medium">Status Operasional Armada</label>
+<div class="flex flex-col gap-2">
+<label class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low has-[:checked]:bg-primary-fixed/30 cursor-pointer transition-colors">
+<input checked="" class="accent-primary" name="ops_status" type="radio" value="ready"/>
+<div>
+<p class="font-label-lg text-label-lg font-semibold text-primary">Aktif &amp; Siap Sewa</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Armada prima dan tersedia untuk reservasi tanggal baru</p>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low has-[:checked]:bg-secondary-container/40 cursor-pointer transition-colors">
+<input class="accent-primary" name="ops_status" type="radio" value="suspended"/>
+<div>
+<p class="font-label-lg text-label-lg font-semibold text-on-surface">Ditangguhkan Sementara</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Jeda reservasi untuk pembaruan ornamen musiman</p>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low has-[:checked]:bg-error-container/30 cursor-pointer transition-colors">
+<input class="accent-primary" name="ops_status" type="radio" value="recondition"/>
+<div>
+<p class="font-label-lg text-label-lg font-semibold text-error">Dalam Rekondisi Total</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Rangka masuk bengkel kayu untuk perbaikan struktural</p>
+</div>
+</label>
+</div>
+</div>
+</section>
+<!-- Danger Zone Action -->
+<div class="pt-space-xs flex justify-center">
+<button class="inline-flex items-center gap-2 text-error font-label-md text-label-md px-4 py-2 rounded-full bg-error-container/20 hover:bg-error-container/40 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+<span>Arsipkan / Hapus Unit dari Sistem Inventaris</span>
+</button>
+</div>
+</form>
+<!-- Sticky Bottom Actions Bar (Ergonomic Dual Buttons) -->
+<div class="fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-xl px-margin py-3 shadow-[0_-8px_24px_rgba(0,34,23,0.08)] flex items-center gap-3">
+<button class="flex-1 h-12 rounded-full bg-surface-container-high text-on-surface font-label-lg text-label-lg font-medium hover:bg-surface-container-highest active:scale-95 transition-all" onclick="history.back()" type="button">
+      Batal
+    </button>
+<button class="flex-[2] h-12 rounded-full bg-primary text-on-primary font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(0,34,23,0.25)] hover:bg-primary-container active:scale-95 transition-all" onclick="alert('Data Papan Bunga Berhasil Disimpan!')" type="button">
+<span class="material-symbols-outlined text-[20px] text-secondary-fixed">save</span>
+<span>Simpan &amp; Publikasikan</span>
+</button>
+</div>
+</div></main></body></html>

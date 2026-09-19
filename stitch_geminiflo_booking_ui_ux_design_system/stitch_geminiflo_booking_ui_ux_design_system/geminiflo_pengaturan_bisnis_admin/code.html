@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<meta content="mobile_stack" name="shell-type"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { width: 100vw; margin: 0; padding: 0; }
+      body { overscroll-behavior: none; min-height: max(884px, 100dvh); }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-bright": "#f6fbf5",
+            "secondary-container": "#fed488",
+            "primary-fixed-dim": "#a5d0bc",
+            "on-secondary-fixed-variant": "#5d4201",
+            "surface-tint": "#3f6656",
+            "surface-container": "#ebefea",
+            "secondary-fixed": "#ffdea5",
+            "on-primary-fixed": "#002116",
+            "on-secondary-container": "#785a1a",
+            "primary": "#002217",
+            "inverse-primary": "#a5d0bc",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#e5e9e4",
+            "surface-container-low": "#f0f5f0",
+            "secondary": "#775a19",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#6ea48c",
+            "surface-variant": "#dfe4df",
+            "tertiary": "#002216",
+            "inverse-on-surface": "#edf2ed",
+            "on-surface-variant": "#414844",
+            "on-secondary": "#ffffff",
+            "error-container": "#ffdad6",
+            "surface-dim": "#d7dbd6",
+            "inverse-surface": "#2c322e",
+            "on-primary-container": "#79a28f",
+            "outline": "#717974",
+            "primary-fixed": "#c1ecd7",
+            "on-primary": "#ffffff",
+            "on-background": "#181d1a",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed-variant": "#19503c",
+            "secondary-fixed-dim": "#e9c176",
+            "primary-container": "#0f382a",
+            "on-surface": "#181d1a",
+            "on-secondary-fixed": "#261900",
+            "tertiary-container": "#003927",
+            "on-error": "#ffffff",
+            "surface-container-highest": "#dfe4df",
+            "on-tertiary-fixed": "#002115",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#9bd2b8",
+            "tertiary-fixed": "#b6efd3",
+            "background": "#f6fbf5",
+            "surface": "#f6fbf5",
+            "outline-variant": "#c1c8c3",
+            "on-primary-fixed-variant": "#274e3f"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "margin-tablet": "2rem",
+            "gutter": "1rem",
+            "space-md": "1rem",
+            "margin": "1.25rem",
+            "space-xl": "2.5rem",
+            "gutter-tablet": "1.5rem",
+            "space-lg": "1.5rem"
+          },
+          fontFamily: {
+            "display-lg": ["Playfair Display"],
+            "title-md": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "headline-md": ["Playfair Display"],
+            "display-lg-mobile": ["Playfair Display"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-lg": ["Playfair Display"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "title-lg": ["Plus Jakarta Sans"],
+            "headline-sm": ["Playfair Display"],
+            "label-md": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"]
+          },
+          fontSize: {
+            "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "title-md": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "500" }],
+            "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "title-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen">
+<header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+<div class="h-16 px-margin flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs min-w-0">
+<button aria-label="Kembali" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-on-surface hover:text-primary transition-colors flex-shrink-0" onclick="history.back()">
+<span class="material-symbols-outlined text-[22px]">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm text-primary tracking-tight truncate ml-1">Geminiflo   Admin Business Settings</h1>
+</div>
+<div class="flex items-center gap-space-sm flex-shrink-0">
+<button aria-label="Bantuan atau Info" class="relative min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">info</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_2px_6px_rgba(0,34,23,0.15)]">
+<span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+</div>
+</div>
+</div>
+</header>
+<main class="flex flex-col relative w-full pt-16 pb-safe bg-surface flex-grow"><div class="flex flex-col w-full pb-28">
+<!-- Brand Status Header Banner -->
+<div class="px-margin pt-4 pb-2">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-secondary-container/20 pointer-events-none"></div>
+<div class="flex items-center gap-space-sm mb-space-xs">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-primary-fixed">
+<span class="material-symbols-outlined text-[18px]">storefront</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Geminiflo_ Booking Ops</span>
+<p class="font-title-md text-title-md text-primary leading-tight">Pengaturan Studio &amp; Armada</p>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Konfigurasi pusat operasional, aturan sewa papan akrilik &amp; busa, batas waktu transfer, serta gerbang pembayaran.</p>
+</div>
+</div>
+<!-- SECTION 1: Business Identity Card -->
+<section class="px-margin mt-4">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">badge</span>
+<h2 class="font-title-md text-title-md text-primary">Identitas Florist Studio</h2>
+</div>
+<button class="font-label-md text-label-md text-secondary hover:text-on-secondary-container flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span> Edit
+        </button>
+</div>
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-start gap-space-sm">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center flex-shrink-0 text-primary">
+<span class="material-symbols-outlined text-[24px]">local_florist</span>
+</div>
+<div class="min-w-0 flex-1">
+<p class="font-title-md text-title-md text-on-surface truncate">Geminiflo Florist Studio Jakarta</p>
+<div class="flex items-center gap-1 text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+<span class="font-body-sm text-body-sm truncate">Kebayoran Baru Hub, Jakarta Selatan</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-2 pt-1">
+<!-- WA Admin Info with Test Action -->
+<div class="flex items-center justify-between bg-surface-container-low rounded-lg px-space-sm py-2">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-primary-container text-[18px]">chat</span>
+<div class="truncate">
+<p class="font-label-sm text-label-sm text-on-surface-variant">WHATSAPP GATEWAY NOTIFIKASI</p>
+<p class="font-title-md text-title-md text-on-surface tracking-wide">+62 811-9988-7711</p>
+</div>
+</div>
+<button class="bg-surface-container hover:bg-secondary-container/50 px-2.5 py-1.5 rounded-lg flex items-center gap-1 text-secondary font-label-md text-label-md transition-colors" id="testWaBtn" type="button">
+<span class="material-symbols-outlined text-[14px]">send</span> Test
+          </button>
+</div>
+<!-- Operational Hours -->
+<div class="flex items-center justify-between bg-surface-container-low rounded-lg px-space-sm py-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">schedule</span>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">JAM OPERASIONAL PRODUKSI &amp; DISPATCH</p>
+<p class="font-title-md text-title-md text-on-surface">07:00 – 22:00 WIB <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">(Setiap Hari)</span></p>
+</div>
+</div>
+<span class="bg-primary-fixed/50 text-on-primary-fixed font-label-sm text-label-sm px-2 py-0.5 rounded-full">Buka</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Payment Settings & Accounts -->
+<section class="px-margin mt-4">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">account_balance_wallet</span>
+<div>
+<h2 class="font-title-md text-title-md text-primary">Rekening &amp; QRIS Penampung</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tujuan transfer DP &amp; pelunasan sewa</p>
+</div>
+</div>
+</div>
+<!-- Account Card 1: BCA -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between gap-2">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center font-bold text-primary font-headline-sm text-headline-sm">
+            BCA
+          </div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface">822-019-4811</span>
+<span class="font-label-sm text-label-sm bg-primary-fixed/40 text-on-primary-fixed px-1.5 rounded">Auto-Check</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">a/n PT Geminiflo Karya Indonesia</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- Account Card 2: Bank Mandiri -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between gap-2">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center font-bold text-secondary font-title-md text-title-md">
+            MDR
+          </div>
+<div class="min-w-0">
+<span class="font-title-md text-title-md text-on-surface">127-00-119283-1</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">a/n PT Geminiflo Karya</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- Account Card 3: QRIS Dinamis -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between gap-2">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">qr_code_2</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface">QRIS Dinamis</span>
+<span class="font-label-sm text-label-sm bg-secondary-container/40 text-on-secondary-container px-1.5 rounded">Instant</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">NMID: ID10200889218 • Geminiflo</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<button class="w-full py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-lg text-label-lg flex items-center justify-center gap-2 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">add_card</span>
+        Tambah Rekening / Akun E-Wallet
+      </button>
+</div>
+</section>
+<!-- SECTION 3: Booking Rules & Rental Limits -->
+<section class="px-margin mt-4">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">rule_folder</span>
+<div>
+<h2 class="font-title-md text-title-md text-primary">Aturan Sewa &amp; Batas Waktu Bayar</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manajemen reservasi otomatis dan slot tanggal</p>
+</div>
+</div>
+<!-- Rule 1: Auto Cancel Timeout -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">Batas Waktu Pembayaran Transfer</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Auto-Cancel</span>
+</div>
+<div class="flex items-center justify-between gap-2">
+<p class="font-body-sm text-body-sm text-on-surface-variant flex-1">Pesanan dibatalkan otomatis jika slip belum terunggah</p>
+<div class="flex items-center bg-surface-container-lowest rounded-lg p-1">
+<button class="w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high" id="decTimerBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<span class="font-title-md text-title-md text-primary px-3" id="timerValue">60 Menit</span>
+<button class="w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high" id="incTimerBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Rule 2: Auto Lock Slot -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between gap-3">
+<div class="min-w-0 flex-1">
+<p class="font-label-md text-label-md text-on-surface">Auto-Lock Slot Tanggal</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Hold slot tanggal 30 menit saat pelanggan sedang mengisi detail ucapan / papan</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- Rule 3: Buffer Rekondisi Rangka -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between gap-3">
+<div class="min-w-0 flex-1">
+<p class="font-label-md text-label-md text-on-surface">Buffer Rekondisi Rangka &amp; Akrilik</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Jeda waktu sanitasi, pelepasan styrofoam &amp; pembersihan bunga</p>
+</div>
+<span class="bg-surface-container-lowest px-3 py-1.5 rounded-lg text-primary font-title-md text-title-md flex-shrink-0">
+          1 Hari
+        </span>
+</div>
+</div>
+</section>
+<!-- SECTION 4: Delivery & Logistics -->
+<section class="px-margin mt-4">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">local_shipping</span>
+<div>
+<h2 class="font-title-md text-title-md text-primary">Biaya Logistik &amp; Penempatan</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Kalkulasi armada pickup &amp; kru pasang-bongkar</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface">Radius Gratis Ongkir</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Dari Studio Kebayoran Baru</p>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-lowest px-3 py-1.5 rounded-lg text-primary font-title-md text-title-md">
+<span>10</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">km</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface">Tarif per km Tambahan</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Di luar radius 10 km awal</p>
+</div>
+<div class="bg-surface-container-lowest px-3 py-1.5 rounded-lg text-primary font-title-md text-title-md">
+            Rp 15.000 <span class="font-body-sm text-body-sm text-on-surface-variant">/ km</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between">
+<div>
+<div class="flex items-center gap-1.5">
+<p class="font-label-md text-label-md text-on-surface">Bongkar / Pasang Malam</p>
+<span class="font-label-sm text-label-sm bg-secondary-container/40 text-on-secondary-container px-1.5 rounded">&gt; 21:00</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Insentif kru lembur per papan</p>
+</div>
+<div class="bg-surface-container-lowest px-3 py-1.5 rounded-lg text-primary font-title-md text-title-md">
+            Rp 100.000
+          </div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: Notifications & Gateway APIs -->
+<section class="px-margin mt-4">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">hub</span>
+<div>
+<h2 class="font-title-md text-title-md text-primary">Notifikasi &amp; Integrasi API</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sinkronisasi webhook dan mutasi perbankan</p>
+</div>
+</div>
+<div class="space-y-2">
+<!-- WA API -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">sms</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">WhatsApp Gateway API</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Fonnte / WABA Official</p>
+</div>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container-lowest px-2.5 py-1 rounded-full text-on-surface">
+<span class="w-2 h-2 rounded-full bg-surface-tint"></span>
+<span class="font-label-sm text-label-sm font-semibold">Connected</span>
+</div>
+</div>
+<!-- BCA Mutation Sync -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">BCA Mutation Auto-Sync</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Poll berkala tiap 2 menit</p>
+</div>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container-lowest px-2.5 py-1 rounded-full text-on-surface">
+<span class="w-2 h-2 rounded-full bg-surface-tint"></span>
+<span class="font-label-sm text-label-sm font-semibold">Active</span>
+</div>
+</div>
+<!-- Push Notif Kru -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">notifications_active</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Push Notif Order ke Lapangan</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Alert realtime HP tim driver &amp; perangkai</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 6: Team & Roles -->
+<section class="px-margin mt-4">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">groups</span>
+<div>
+<h2 class="font-title-md text-title-md text-primary">Tim Operasional &amp; Hak Akses</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">4 staf aktif terautentikasi</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<!-- Member 1 -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm">PB</div>
+<p class="font-title-md text-title-md text-primary truncate">Pak Bram</p>
+</div>
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container-lowest px-2 py-0.5 rounded w-fit">Owner / Admin</span>
+</div>
+<!-- Member 2 -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-label-sm text-label-sm">MR</div>
+<p class="font-title-md text-title-md text-primary truncate">Mba Rina</p>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-lowest px-2 py-0.5 rounded w-fit">Kasir / Verifikator</span>
+</div>
+<!-- Member 3 -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-surface-tint text-on-primary flex items-center justify-center font-label-sm text-label-sm">PH</div>
+<p class="font-title-md text-title-md text-primary truncate">Pak Hendra</p>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-lowest px-2 py-0.5 rounded w-fit">Koord. Armada</span>
+</div>
+<!-- Member 4 -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-primary-container text-primary-fixed flex items-center justify-center font-label-sm text-label-sm">FW</div>
+<p class="font-title-md text-title-md text-primary truncate">Tim Florist</p>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-lowest px-2 py-0.5 rounded w-fit">Workshop Hub</span>
+</div>
+</div>
+<button class="w-full py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-lg text-label-lg flex items-center justify-center gap-2 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">manage_accounts</span>
+        Kelola Staf &amp; Peran
+      </button>
+</div>
+</section>
+<!-- SECTION 7: System Maintenance & Export -->
+<section class="px-margin mt-4">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">tune</span>
+<div>
+<h2 class="font-title-md text-title-md text-primary">Sistem &amp; Pemeliharaan</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Arsip data sewa &amp; kontrol ketersediaan toko</p>
+</div>
+</div>
+<!-- Backup Action -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between gap-2">
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface">Cadangkan Data Booking &amp; Keuangan</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ekspor berkala riwayat pesanan (.CSV / .PDF)</p>
+</div>
+<button class="bg-surface-container-lowest hover:bg-surface-container px-3 py-2 rounded-lg text-primary font-label-md text-label-md flex items-center gap-1.5 flex-shrink-0 transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span> Unduh
+        </button>
+</div>
+<!-- Maintenance Toggle -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center justify-between gap-3">
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<p class="font-label-md text-label-md text-on-surface">Tutup Toko Sementara (Maintenance)</p>
+<span class="font-label-sm text-label-sm bg-surface-container text-on-surface-variant px-1.5 rounded">Toko Siaga</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sembunyikan kalender reservasi dari publik saat kuota penuh</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-error"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Sticky Floating Save Bar -->
+<div class="fixed bottom-0 left-0 right-0 p-margin bg-surface/90 backdrop-blur-md z-40 flex items-center justify-between gap-3 shadow-[0_-8px_20px_rgba(0,34,23,0.06)]">
+<div class="hidden sm:block">
+<p class="font-title-md text-title-md text-primary">Konfigurasi Siap Diterapkan</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Perubahan langsung aktif di katalog reservasi klien</p>
+</div>
+<button class="w-full sm:w-auto px-6 h-[52px] rounded-xl bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all" id="saveSettingsBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+      Simpan Perubahan Pengaturan
+    </button>
+</div>
+<!-- Toast Notification Modal (Micro-interaction) -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-full bg-primary text-on-primary shadow-xl flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300 z-50" id="toastAlert">
+<span class="material-symbols-outlined text-secondary-fixed text-[18px]">verified</span>
+<span class="font-label-md text-label-md" id="toastMsg">Pengaturan berhasil diperbarui!</span>
+</div>
+</div>
+<script>
+  (function() {
+    // Stepper timer logic
+    let minutes = 60;
+    const timerValue = document.getElementById('timerValue');
+    const decBtn = document.getElementById('decTimerBtn');
+    const incBtn = document.getElementById('incTimerBtn');
+    const toast = document.getElementById('toastAlert');
+    const toastMsg = document.getElementById('toastMsg');
+    const saveBtn = document.getElementById('saveSettingsBtn');
+    const testWaBtn = document.getElementById('testWaBtn');
+
+    function showToast(msg) {
+      if (!toast) return;
+      toastMsg.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2');
+      }, 2500);
+    }
+
+    if (decBtn && incBtn && timerValue) {
+      decBtn.addEventListener('click', () => {
+        if (minutes > 15) {
+          minutes -= 15;
+          timerValue.textContent = minutes + ' Menit';
+        }
+      });
+
+      incBtn.addEventListener('click', () => {
+        if (minutes < 180) {
+          minutes += 15;
+          timerValue.textContent = minutes + ' Menit';
+        }
+      });
+    }
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        showToast('Konfigurasi Studio & Pembayaran Disimpan!');
+      });
+    }
+
+    if (testWaBtn) {
+      testWaBtn.addEventListener('click', () => {
+        showToast('Pesan uji coba WhatsApp dikirim ke +62 811-9988-7711');
+      });
+    }
+  })();
+</script></main>
+</body></html>
