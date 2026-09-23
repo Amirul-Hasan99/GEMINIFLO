@@ -15,12 +15,12 @@ class AdminReportsScreen extends StatelessWidget {
         title: const Text('Laporan',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
+      body: const Padding(
+        padding: EdgeInsets.all(AppSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Laporan Bisnis',
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -28,8 +28,8 @@ class AdminReportsScreen extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: AppSpacing.md),
-            const Text(
+            SizedBox(height: AppSpacing.md),
+            Text(
               'Fitur laporan statistik akan tersedia setelah koneksi ke backend Laravel.',
               style: TextStyle(
                 color: AppColors.textSecondary,

@@ -139,12 +139,12 @@ class BookingConfirmationScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.statusWarning.withValues(alpha: 0.3)),
               ),
-              child: Row(
+              child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.info_outline,
+                  Icon(Icons.info_outline,
                       color: AppColors.statusWarning, size: 18),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Slot akan dikonfirmasi setelah pembayaran terverifikasi. Batas waktu pembayaran 24 jam.',

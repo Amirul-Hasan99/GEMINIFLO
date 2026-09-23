@@ -1,25 +1,19 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../data/datasources/catalog_mock_datasource.dart';
+import '../../data/repositories/catalog_repository_impl.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/entities/product_category.dart';
 import '../../domain/repositories/catalog_repository.dart';
-import '../../../../core/database/neon_database_service.dart';
-import '../../data/datasources/catalog_mock_datasource.dart';
-import '../../data/datasources/catalog_neon_datasource.dart';
-import '../../data/repositories/catalog_repository_impl.dart';
 
 final catalogMockDataSourceProvider = Provider<CatalogMockDataSource>((ref) {
   return CatalogMockDataSource();
 });
 
-final catalogNeonDataSourceProvider = Provider<CatalogNeonDataSource>((ref) {
-  final neonDb = ref.watch(neonDatabaseServiceProvider);
-  return CatalogNeonDataSource(neonDb);
-});
-
 final catalogRepositoryProvider = Provider<CatalogRepository>((ref) {
   return CatalogRepositoryImpl(
     mockDataSource: ref.watch(catalogMockDataSourceProvider),
-    neonDataSource: ref.watch(catalogNeonDataSourceProvider),
   );
 });
 
@@ -163,8 +157,8 @@ class FavoritesNotifier extends Notifier<List<Product>> {
     final repo = ref.read(catalogRepositoryProvider);
     await repo.toggleFavorite(productId);
     await loadFavorites();
-    // Refresh catalog to update isFavorited flag
-    ref.read(catalogProvider.notifier).loadProducts();
+    // Refresh catalog to update isFavorited flag (fire-and-forget)
+    unawaited(ref.read(catalogProvider.notifier).loadProducts());
   }
 }
 

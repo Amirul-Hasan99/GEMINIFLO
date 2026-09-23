@@ -12,7 +12,7 @@ class CatalogMockDataSource {
   ];
 
   static final List<Product> _products = [
-    Product(
+    const Product(
       id: '1',
       name: 'Papan Bunga Grand Opening Elegant',
       sku: 'GF-GO-001',
@@ -29,7 +29,7 @@ class CatalogMockDataSource {
       isFeatured: true,
       availabilityStatus: 'available',
     ),
-    Product(
+    const Product(
       id: '2',
       name: 'Papan Bunga Pernikahan Romantis',
       sku: 'GF-WD-001',
@@ -46,7 +46,7 @@ class CatalogMockDataSource {
       isFeatured: true,
       availabilityStatus: 'limited',
     ),
-    Product(
+    const Product(
       id: '3',
       name: 'Papan Ucapan Ulang Tahun Ceria',
       sku: 'GF-BD-001',
@@ -63,7 +63,7 @@ class CatalogMockDataSource {
       isFeatured: false,
       availabilityStatus: 'available',
     ),
-    Product(
+    const Product(
       id: '4',
       name: 'Papan Bunga Duka Cita',
       sku: 'GF-DK-001',
@@ -80,7 +80,7 @@ class CatalogMockDataSource {
       isFeatured: false,
       availabilityStatus: 'unavailable',
     ),
-    Product(
+    const Product(
       id: '5',
       name: 'Papan Bunga Wisuda Prestisius',
       sku: 'GF-WS-001',
@@ -97,7 +97,7 @@ class CatalogMockDataSource {
       isFeatured: true,
       availabilityStatus: 'available',
     ),
-    Product(
+    const Product(
       id: '6',
       name: 'Papan Promosi Modern Minimalis',
       sku: 'GF-PM-001',

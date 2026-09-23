@@ -1,29 +1,16 @@
-import '../../../../core/config/app_config.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/entities/product_category.dart';
 import '../../domain/repositories/catalog_repository.dart';
 import '../datasources/catalog_mock_datasource.dart';
-import '../datasources/catalog_neon_datasource.dart';
 
 class CatalogRepositoryImpl implements CatalogRepository {
   final CatalogMockDataSource mockDataSource;
-  final CatalogNeonDataSource? neonDataSource;
 
-  CatalogRepositoryImpl({
-    required this.mockDataSource,
-    this.neonDataSource,
-  });
+  CatalogRepositoryImpl({required this.mockDataSource});
 
   @override
   Future<List<ProductCategory>> getCategories() async {
-    if (AppConfig.useNeonDb && neonDataSource != null) {
-      try {
-        final neonCats = await neonDataSource!.getCategories();
-        if (neonCats.isNotEmpty) return neonCats;
-      } catch (_) {
-        // Fallback to mock on network/DB exception
-      }
-    }
+    // Future: call a backend REST API here when AppConfig.useNeonDb is true.
     return mockDataSource.getCategories();
   }
 
@@ -36,20 +23,6 @@ class CatalogRepositoryImpl implements CatalogRepository {
     int page = 1,
     int perPage = 10,
   }) async {
-    if (AppConfig.useNeonDb && neonDataSource != null) {
-      try {
-        final neonProducts = await neonDataSource!.getProducts(
-          categoryId: categoryId,
-          search: search,
-          sortBy: sortBy,
-          page: page,
-          perPage: perPage,
-        );
-        if (neonProducts.isNotEmpty) return neonProducts;
-      } catch (_) {
-        // Fallback to mock on network/DB exception
-      }
-    }
     return mockDataSource.getProducts(
       categoryId: categoryId,
       search: search,
@@ -61,14 +34,6 @@ class CatalogRepositoryImpl implements CatalogRepository {
 
   @override
   Future<Product> getProductById(String id) async {
-    if (AppConfig.useNeonDb && neonDataSource != null) {
-      try {
-        final product = await neonDataSource!.getProductById(id);
-        if (product != null) return product;
-      } catch (_) {
-        // Fallback to mock on network/DB exception
-      }
-    }
     return mockDataSource.getProductById(id);
   }
 

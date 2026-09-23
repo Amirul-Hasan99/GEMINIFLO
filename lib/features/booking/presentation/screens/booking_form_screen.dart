@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -110,10 +111,10 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
     if (!mounted) return;
     if (booking != null) {
-      context.push(RouteNames.bookingConfirmation, extra: {
+      unawaited(context.push(RouteNames.bookingConfirmation, extra: {
         'booking': booking,
         'productName': productName,
-      });
+      }));
     }
   }
 
@@ -208,7 +209,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                   ),
                   const SizedBox(height: AppSpacing.xl),
 
-                  _SectionTitle('Informasi Pemesan'),
+                  const _SectionTitle('Informasi Pemesan'),
                   const SizedBox(height: AppSpacing.md),
                   _FormField(
                     label: 'Nama Pemesan',
@@ -226,7 +227,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                   ),
                   const SizedBox(height: AppSpacing.xl),
 
-                  _SectionTitle('Detail Acara'),
+                  const _SectionTitle('Detail Acara'),
                   const SizedBox(height: AppSpacing.md),
                   // Date picker
                   GestureDetector(
@@ -285,7 +286,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                   ),
                   const SizedBox(height: AppSpacing.xl),
 
-                  _SectionTitle('Layanan Tambahan'),
+                  const _SectionTitle('Layanan Tambahan'),
                   const SizedBox(height: AppSpacing.md),
                   _ServiceToggle(
                     label: 'Pengiriman',

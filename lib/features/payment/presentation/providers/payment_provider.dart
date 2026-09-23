@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/payment.dart';
+
 import '../../data/datasources/payment_mock_datasource.dart';
+import '../../domain/entities/payment.dart';
 
 final paymentMockDataSourceProvider = Provider<PaymentMockDataSource>((ref) {
   return PaymentMockDataSource();

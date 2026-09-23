@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/currency_formatter.dart';
-import '../../../../core/widgets/loading_widget.dart';
-import '../../../../core/widgets/error_widget.dart' as app;
-import '../../../../core/widgets/status_badge.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/error_widget.dart' as app;
+import '../../../../core/widgets/loading_widget.dart';
+import '../../../../core/widgets/status_badge.dart';
 import '../providers/catalog_provider.dart';
 
 class ProductDetailScreen extends ConsumerWidget {

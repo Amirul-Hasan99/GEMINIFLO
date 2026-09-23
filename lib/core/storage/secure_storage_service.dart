@@ -5,7 +5,15 @@ class SecureStorageService {
   final FlutterSecureStorage _storage;
 
   SecureStorageService({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+      : _storage = storage ??
+            const FlutterSecureStorage(
+              aOptions: AndroidOptions(
+                resetOnError: true,
+              ),
+              iOptions: IOSOptions(
+                accessibility: KeychainAccessibility.first_unlock,
+              ),
+            );
 
   Future<void> saveToken(String token) async {
     await _storage.write(key: AppConstants.keyAuthToken, value: token);

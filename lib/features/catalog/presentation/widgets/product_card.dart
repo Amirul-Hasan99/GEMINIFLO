@@ -138,9 +138,9 @@ class ProductCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  Text(
+                  const Text(
                     '/ 24 jam',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 10,
                     ),

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_bottom_nav.dart';
-import '../../../../core/widgets/loading_widget.dart';
-import '../../../../core/widgets/error_widget.dart' as app;
 import '../../../../core/widgets/empty_widget.dart';
+import '../../../../core/widgets/error_widget.dart' as app;
+import '../../../../core/widgets/loading_widget.dart';
 import '../providers/catalog_provider.dart';
 import '../widgets/product_card.dart';
 
@@ -61,7 +62,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
               style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Cari papan bunga...',
-                hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 14),
+                hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
                 prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
                 suffixIcon: _searchCtrl.text.isNotEmpty
                     ? IconButton(

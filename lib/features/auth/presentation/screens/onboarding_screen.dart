@@ -17,19 +17,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
 
   final List<_OnboardingData> _pages = [
-    _OnboardingData(
+    const _OnboardingData(
       icon: Icons.local_florist,
       title: 'Papan Bunga Premium',
       description:
           'Koleksi papan bunga elegan untuk setiap momen spesial — pernikahan, grand opening, ucapan selamat, dan duka cita.',
     ),
-    _OnboardingData(
+    const _OnboardingData(
       icon: Icons.calendar_today_outlined,
       title: 'Booking Mudah & Cepat',
       description:
           'Cek ketersediaan secara real-time, pilih tanggal, dan konfirmasi pesanan Anda dalam hitungan menit.',
     ),
-    _OnboardingData(
+    const _OnboardingData(
       icon: Icons.verified_outlined,
       title: 'Pembayaran Aman',
       description:
@@ -71,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 child: TextButton(
                   onPressed: () => context.go(RouteNames.login),
-                  child: Text(
+                  child: const Text(
                     'Lewati',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -128,7 +128,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'Sudah punya akun? ',
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -137,7 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 GestureDetector(
                   onTap: () => context.go(RouteNames.login),
-                  child: Text(
+                  child: const Text(
                     'Masuk',
                     style: TextStyle(
                       color: AppColors.primary,

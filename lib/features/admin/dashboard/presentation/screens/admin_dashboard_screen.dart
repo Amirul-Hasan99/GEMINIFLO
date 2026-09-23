@@ -144,7 +144,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                         icon: Icons.shopping_bag_outlined,
                         color: AppColors.statusInfo,
                       ),
-                      _StatCard(
+                      const _StatCard(
                         label: 'Unit Terpasang',
                         value: '3',
                         icon: Icons.local_florist,

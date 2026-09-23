@@ -239,11 +239,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       // Divider
-                      Row(
+                      const Row(
                         children: [
-                          const Expanded(child: Divider(color: AppColors.border)),
+                          Expanded(child: Divider(color: AppColors.border)),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            padding: EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
                               'atau',
                               style: TextStyle(
@@ -252,17 +252,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                             ),
                           ),
-                          const Expanded(child: Divider(color: AppColors.border)),
+                          Expanded(child: Divider(color: AppColors.border)),
                         ],
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       // Social login (placeholder)
-                      AppButton(
+                      const AppButton(
                         text: 'Masuk dengan Google',
                         onPressed: null,
                         type: ButtonType.outlined,
                         width: double.infinity,
-                        icon: const Icon(Icons.g_mobiledata, size: 24),
+                        icon: Icon(Icons.g_mobiledata, size: 24),
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       // Register link

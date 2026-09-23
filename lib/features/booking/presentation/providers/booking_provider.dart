@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/booking.dart';
-import '../../domain/repositories/booking_repository.dart';
+
 import '../../data/datasources/booking_mock_datasource.dart';
 import '../../data/repositories/booking_repository_impl.dart';
+import '../../domain/entities/booking.dart';
+import '../../domain/repositories/booking_repository.dart';
 
 final bookingMockDataSourceProvider = Provider<BookingMockDataSource>((ref) {
   return BookingMockDataSource();
@@ -131,8 +133,8 @@ class CreateBookingNotifier extends Notifier<CreateBookingState> {
         productName: productName,
       );
       state = state.copyWith(isLoading: false, createdBooking: booking);
-      // Refresh orders list
-      ref.read(myBookingsProvider.notifier).loadBookings();
+      // Refresh orders list (fire-and-forget; booking list will update in background)
+      unawaited(ref.read(myBookingsProvider.notifier).loadBookings());
       return booking;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());

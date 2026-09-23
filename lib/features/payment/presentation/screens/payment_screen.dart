@@ -225,12 +225,12 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   border: Border.all(
                       color: AppColors.statusWarning.withValues(alpha: 0.3)),
                 ),
-                child: Column(
+                child: const Column(
                   children: [
-                    const Icon(Icons.hourglass_empty,
+                    Icon(Icons.hourglass_empty,
                         color: AppColors.statusWarning, size: 48),
-                    const SizedBox(height: 12),
-                    const Text(
+                    SizedBox(height: 12),
+                    Text(
                       'Menunggu Verifikasi Admin',
                       style: TextStyle(
                         color: AppColors.statusWarning,
@@ -238,8 +238,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    SizedBox(height: 8),
+                    Text(
                       'Bukti pembayaran Anda sedang diverifikasi oleh admin. Biasanya membutuhkan waktu 1-2 jam.',
                       textAlign: TextAlign.center,
                       style: TextStyle(

@@ -4,8 +4,10 @@ class AppConfig {
   /// When set to false, all requests route to [EnvConfig.baseUrl] via Dio.
   static bool useMockData = false;
 
-  /// Whether to use direct Neon Serverless PostgreSQL Database
-  static bool useNeonDb = true;
+  /// Whether to use direct Neon Serverless PostgreSQL Database.
+  /// Currently disabled — postgres package removed from client.
+  /// Replace with a backend API layer for production.
+  static bool useNeonDb = false;
 
   /// Toggle between Mock Mode and Live API Mode
   static void setMockMode(bool enabled) {

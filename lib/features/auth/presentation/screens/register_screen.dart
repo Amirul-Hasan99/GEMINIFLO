@@ -94,7 +94,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: AppSpacing.sm),
-                Text(
+                const Text(
                   'Lengkapi data diri Anda',
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -191,30 +191,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: RichText(
-                        text: TextSpan(
-                          style: const TextStyle(
+                        text: const TextSpan(
+                          style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 13,
                             height: 1.5,
                           ),
                           children: [
-                            const TextSpan(text: 'Saya menyetujui '),
+                            TextSpan(text: 'Saya menyetujui '),
                             TextSpan(
                               text: 'Syarat & Ketentuan',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const TextSpan(text: ' dan '),
+                            TextSpan(text: ' dan '),
                             TextSpan(
                               text: 'Kebijakan Privasi',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            const TextSpan(text: ' Geminiflo_'),
+                            TextSpan(text: ' Geminiflo_'),
                           ],
                         ),
                       ),
