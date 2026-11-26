@@ -49,3 +49,7 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+.vercel
+.env*.local
+node_modules/
+/firebase_service_account.json

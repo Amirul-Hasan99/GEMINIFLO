@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/product_image.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/auth_form_field.dart';
 
@@ -18,44 +24,48 @@ class RegisterScreen extends ConsumerStatefulWidget {
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
+  final _usernameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
-  final _confirmPassCtrl = TextEditingController();
-  bool _agreeToTerms = false;
+  final _picker = ImagePicker();
+  String? _avatarData;
+  bool _isPickingAvatar = false;
+  bool _agreeToTerms = true;
 
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _usernameCtrl.dispose();
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
     _passCtrl.dispose();
-    _confirmPassCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
-    if (!_agreeToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Anda harus menyetujui syarat dan ketentuan.'),
-          backgroundColor: AppColors.statusWarning,
-        ),
-      );
-      return;
-    }
     final notifier = ref.read(authStateProvider.notifier);
+    final username = _usernameCtrl.text.trim();
+    final password = _passCtrl.text;
+
     final success = await notifier.register(
       name: _nameCtrl.text.trim(),
-      email: _emailCtrl.text.trim(),
-      password: _passCtrl.text,
-      passwordConfirmation: _confirmPassCtrl.text,
-      phone: _phoneCtrl.text.trim().isNotEmpty ? _phoneCtrl.text.trim() : null,
+      username: username,
+      email: _emailCtrl.text.trim().toLowerCase(),
+      phone: _phoneCtrl.text.trim(),
+      avatar: _avatarData,
+      password: password,
+      passwordConfirmation: password,
     );
     if (!mounted) return;
     if (success) {
-      context.go(RouteNames.home);
+      final auth = ref.read(authStateProvider);
+      if (auth.isAdmin) {
+        context.go(RouteNames.adminDashboard);
+      } else {
+        context.go(RouteNames.home);
+      }
     } else {
       final error = ref.read(authStateProvider).errorMessage;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -64,6 +74,42 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           backgroundColor: AppColors.statusError,
         ),
       );
+    }
+  }
+
+  Future<void> _pickProfilePhoto() async {
+    setState(() => _isPickingAvatar = true);
+    try {
+      final image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 640,
+        maxHeight: 640,
+        imageQuality: 70,
+      );
+      if (image == null) return;
+      final bytes = await image.readAsBytes();
+      final extension = image.name.split('.').last.toLowerCase();
+      final mimeType =
+          image.mimeType ??
+          switch (extension) {
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+            _ => 'image/jpeg',
+          };
+      if (!mounted) return;
+      setState(
+        () => _avatarData = 'data:$mimeType;base64,${base64Encode(bytes)}',
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Foto tidak dapat dibuka. Coba pilih gambar lain.'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isPickingAvatar = false);
     }
   }
 
@@ -77,12 +123,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Buat Akun Baru',
+          'Daftar Akun Baru',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-          onPressed: () => context.pop(),
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go(RouteNames.login),
         ),
       ),
       body: SafeArea(
@@ -93,12 +140,88 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: AppSpacing.sm),
-                const Text(
-                  'Lengkapi data diri Anda',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 14,
+                Center(
+                  child: Column(
+                    children: [
+                      Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          Container(
+                            width: 104,
+                            height: 104,
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.surfaceWhite,
+                              border: Border.all(
+                                color: AppColors.secondary,
+                                width: 2,
+                              ),
+                            ),
+                            child: ClipOval(
+                              child: _avatarData == null
+                                  ? const ColoredBox(
+                                      color: AppColors.background,
+                                      child: Icon(
+                                        Icons.person_outline_rounded,
+                                        size: 58,
+                                        color: AppColors.textMuted,
+                                      ),
+                                    )
+                                  : ProductImage(
+                                      source: _avatarData,
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
+                          ),
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: AppColors.primary,
+                            child: _isPickingAvatar
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : IconButton(
+                                    tooltip: 'Pilih foto profil dari perangkat',
+                                    onPressed: _pickProfilePhoto,
+                                    padding: EdgeInsets.zero,
+                                    icon: const Icon(
+                                      Icons.camera_alt_outlined,
+                                      size: 18,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ],
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: _isPickingAvatar ? null : _pickProfilePhoto,
+                        icon: Icon(
+                          _avatarData == null
+                              ? Icons.photo_library_outlined
+                              : Icons.check_circle_outline,
+                          size: 18,
+                        ),
+                        label: Text(
+                          _avatarData == null
+                              ? 'Pilih Foto Profil dari Perangkat'
+                              : 'Foto Profil Dipilih · Ganti Foto',
+                        ),
+                      ),
+                      const Text(
+                        'Foto ini akan tersimpan pada profil akun Anda.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
@@ -106,73 +229,66 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   label: 'Nama Lengkap',
                   hint: 'masukkan nama lengkap Anda',
                   controller: _nameCtrl,
+                  prefixIcon: Icons.badge_outlined,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) =>
+                      Validators.required(value, 'Nama lengkap'),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AuthFormField(
+                  label: 'Username',
+                  hint: 'buat username, contoh: amirul_01',
+                  controller: _usernameCtrl,
                   prefixIcon: Icons.person_outline,
                   textInputAction: TextInputAction.next,
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Nama wajib diisi';
-                    if (v.trim().length < 3) return 'Nama minimal 3 karakter';
+                  validator: (value) {
+                    final username = value?.trim() ?? '';
+                    if (username.isEmpty) return 'Username wajib diisi.';
+                    if (!RegExp(r'^[a-zA-Z0-9][a-zA-Z0-9._]{2,29}$')
+                        .hasMatch(username)) {
+                      return 'Gunakan 3–30 karakter: huruf, angka, titik, atau garis bawah.';
+                    }
                     return null;
                   },
                 ),
                 const SizedBox(height: AppSpacing.md),
                 AuthFormField(
                   label: 'Email',
-                  hint: 'masukkan email aktif Anda',
+                  hint: 'nama@email.com',
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.email_outlined,
                   textInputAction: TextInputAction.next,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Email wajib diisi';
-                    if (!v.contains('@') || !v.contains('.')) {
-                      return 'Format email tidak valid';
-                    }
-                    return null;
-                  },
+                  validator: Validators.email,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 AuthFormField(
-                  label: 'Nomor HP (Opsional)',
-                  hint: '08xx xxxx xxxx',
+                  label: 'Nomor Telepon / WhatsApp (Wajib)',
+                  hint: 'contoh: 081234567890',
                   controller: _phoneCtrl,
                   keyboardType: TextInputType.phone,
                   prefixIcon: Icons.phone_outlined,
                   textInputAction: TextInputAction.next,
+                  validator: Validators.phone,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 AuthFormField(
                   label: 'Password',
-                  hint: 'minimal 8 karakter',
+                  hint: 'masukkan password Anda',
                   controller: _passCtrl,
-                  isPassword: true,
-                  prefixIcon: Icons.lock_outlined,
-                  textInputAction: TextInputAction.next,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return 'Password wajib diisi';
-                    if (v.length < 8) return 'Password minimal 8 karakter';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: AppSpacing.md),
-                AuthFormField(
-                  label: 'Konfirmasi Password',
-                  hint: 'ulangi password Anda',
-                  controller: _confirmPassCtrl,
                   isPassword: true,
                   prefixIcon: Icons.lock_outlined,
                   textInputAction: TextInputAction.done,
                   validator: (v) {
-                    if (v == null || v.isEmpty) {
-                      return 'Konfirmasi password wajib diisi';
-                    }
-                    if (v != _passCtrl.text) return 'Password tidak cocok';
+                    if (v == null || v.isEmpty) return 'Password wajib diisi';
+                    if (v.length < 6) return 'Password minimal 6 karakter';
                     return null;
                   },
                 ),
                 const SizedBox(height: AppSpacing.md),
                 // Terms agreement
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
                       width: 20,
@@ -180,7 +296,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       child: Checkbox(
                         value: _agreeToTerms,
                         onChanged: (v) =>
-                            setState(() => _agreeToTerms = v ?? false),
+                            setState(() => _agreeToTerms = v ?? true),
                         activeColor: AppColors.primary,
                         side: const BorderSide(color: AppColors.border),
                         shape: RoundedRectangleBorder(
@@ -189,33 +305,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(
-                      child: RichText(
-                        text: const TextSpan(
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 13,
-                            height: 1.5,
-                          ),
-                          children: [
-                            TextSpan(text: 'Saya menyetujui '),
-                            TextSpan(
-                              text: 'Syarat & Ketentuan',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            TextSpan(text: ' dan '),
-                            TextSpan(
-                              text: 'Kebijakan Privasi',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            TextSpan(text: ' Geminiflo_'),
-                          ],
+                    const Expanded(
+                      child: Text(
+                        'Saya menyetujui Syarat & Ketentuan Geminiflo',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 13,
                         ),
                       ),
                     ),

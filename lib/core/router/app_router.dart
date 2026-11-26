@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,16 +12,20 @@ import '../../features/admin/payments/presentation/screens/admin_payments_screen
 import '../../features/admin/products/presentation/screens/admin_product_form_screen.dart';
 import '../../features/admin/products/presentation/screens/admin_products_screen.dart';
 import '../../features/admin/reports/presentation/screens/admin_reports_screen.dart';
+import '../../features/admin/reviews/presentation/screens/admin_reviews_screen.dart';
 import '../../features/admin/settings/presentation/screens/admin_settings_screen.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/auth/presentation/screens/change_password_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/screens/reset_password_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/booking/presentation/screens/booking_confirmation_screen.dart';
 import '../../features/booking/presentation/screens/booking_form_screen.dart';
 import '../../features/booking/presentation/screens/booking_success_screen.dart';
+import '../../features/booking/domain/entities/booking.dart';
 import '../../features/catalog/presentation/screens/catalog_screen.dart';
 import '../../features/catalog/presentation/screens/product_detail_screen.dart';
 import '../../features/favorites/presentation/screens/favorites_screen.dart';
@@ -29,9 +33,17 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/orders/presentation/screens/order_detail_screen.dart';
 import '../../features/orders/presentation/screens/orders_screen.dart';
+import '../../features/payment/presentation/screens/payment_proof_upload_screen.dart';
 import '../../features/payment/presentation/screens/payment_screen.dart';
+import '../../features/profile/presentation/screens/about_app_screen.dart';
+import '../../features/profile/presentation/screens/help_faq_screen.dart';
+import '../../features/profile/presentation/screens/privacy_policy_screen.dart';
 import '../../features/profile/presentation/screens/profile_edit_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/profile/presentation/screens/terms_conditions_screen.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../widgets/app_button.dart';
 import '../router/route_names.dart';
 
 // Listenable to trigger router refresh when auth state changes
@@ -50,7 +62,60 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: RouteNames.splash,
     refreshListenable: GoRouterRefreshStream(ref),
+    errorBuilder: (context, state) => Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        title: const Text('Halaman Tidak Ditemukan'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.search_off_rounded,
+                size: 80,
+                color: AppColors.textMuted,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              const Text(
+                '404 - Halaman Tidak Ditemukan',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Maaf, halaman "${state.uri}" yang Anda tuju tidak tersedia.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+              AppButton(
+                text: 'Kembali ke Beranda',
+                onPressed: () => context.go(RouteNames.home),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
     redirect: (context, state) {
+      if (state.uri.scheme == 'geminiflo' &&
+          state.uri.host == 'reset-password') {
+        return Uri(
+          path: RouteNames.resetPassword,
+          queryParameters: state.uri.queryParameters,
+        ).toString();
+      }
       final authState = ref.read(authStateProvider);
       final isLoading = authState.isLoading;
       final isAuthenticated = authState.isAuthenticated;
@@ -71,7 +136,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isPublic = publicRoutes.any((r) => location.startsWith(r));
 
       if (!isAuthenticated && !isPublic) return RouteNames.login;
-      if (isAuthenticated && isPublic && location != RouteNames.splash) {
+      if (isAuthenticated &&
+          isPublic &&
+          location != RouteNames.splash &&
+          location != RouteNames.resetPassword) {
         return isAdmin ? RouteNames.adminDashboard : RouteNames.home;
       }
       if (isAuthenticated && !isAdmin && location.startsWith('/admin')) {
@@ -100,6 +168,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.resetPassword,
+        builder: (context, state) => ResetPasswordScreen(
+          email: state.uri.queryParameters['email'] ?? '',
+          token: state.uri.queryParameters['token'] ?? '',
+        ),
       ),
 
       // --- User Routes ---
@@ -131,13 +206,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/booking/:productId',
-        builder: (context, state) =>
-            BookingFormScreen(productId: state.pathParameters['productId']!),
+        builder: (context, state) {
+          final extra = state.extra;
+          return BookingFormScreen(
+            productId: state.pathParameters['productId']!,
+            initialDate: extra is DateTime
+                ? extra
+                : extra is Map<String, dynamic>
+                ? extra['initialDate'] as DateTime?
+                : null,
+            initialBooking: extra is Map<String, dynamic>
+                ? extra['booking'] as Booking?
+                : null,
+          );
+        },
       ),
       GoRoute(
         path: RouteNames.bookingConfirmation,
-        builder: (context, state) =>
-            BookingConfirmationScreen(extra: state.extra as Map<String, dynamic>?),
+        builder: (context, state) => BookingConfirmationScreen(
+          extra: state.extra as Map<String, dynamic>?,
+        ),
       ),
       GoRoute(
         path: RouteNames.bookingSuccess,
@@ -148,6 +236,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/payment/:bookingId',
         builder: (context, state) =>
             PaymentScreen(bookingId: state.pathParameters['bookingId']!),
+      ),
+      GoRoute(
+        path: '/payment/:bookingId/proof',
+        builder: (context, state) => PaymentProofUploadScreen(
+          bookingId: state.pathParameters['bookingId']!,
+        ),
       ),
       GoRoute(
         path: RouteNames.profile,
@@ -164,6 +258,34 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.notifications,
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.changePassword,
+        builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.help,
+        builder: (context, state) => const HelpFaqScreen(),
+      ),
+      GoRoute(
+        path: '/profile/help',
+        builder: (context, state) => const HelpFaqScreen(),
+      ),
+      GoRoute(
+        path: '/help-faq',
+        builder: (context, state) => const HelpFaqScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.privacyPolicy,
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.termsConditions,
+        builder: (context, state) => const TermsConditionsScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.about,
+        builder: (context, state) => const AboutAppScreen(),
       ),
 
       // --- Admin Routes ---
@@ -182,8 +304,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/admin/products/:id/edit',
-        builder: (context, state) => AdminProductFormScreen(
-            productId: state.pathParameters['id']),
+        builder: (context, state) =>
+            AdminProductFormScreen(productId: state.pathParameters['id']),
       ),
       GoRoute(
         path: RouteNames.adminBookings,
@@ -191,8 +313,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/admin/bookings/:id',
-        builder: (context, state) => AdminBookingDetailScreen(
-            bookingId: state.pathParameters['id']!),
+        builder: (context, state) =>
+            AdminBookingDetailScreen(bookingId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: RouteNames.adminPayments,
@@ -200,8 +322,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/admin/payments/:id',
-        builder: (context, state) => AdminPaymentDetailScreen(
-            paymentId: state.pathParameters['id']!),
+        builder: (context, state) =>
+            AdminPaymentDetailScreen(paymentId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: RouteNames.adminCustomers,
@@ -214,6 +336,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.adminSettings,
         builder: (context, state) => const AdminSettingsScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.adminReviews,
+        builder: (context, state) => const AdminReviewsScreen(),
       ),
     ],
   );

@@ -1,5 +1,5 @@
 name: geminiflo_booking
-description: "A new Flutter project."
+description: "GEMINIFLO - Modern Florist Booking Platform (Expressed with Elegance)"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -47,6 +47,16 @@ dependencies:
   flutter_svg: ^2.3.0
   shimmer: ^4.0.0
   postgres: ^3.5.15
+  crypto: ^3.0.7
+  pdf: ^3.13.1
+  printing: ^5.15.1
+  path_provider: ^2.1.6
+  share_plus: ^13.3.0
+  web: ^1.1.1
+  lucide_icons_flutter: ^3.1.20
+  firebase_core: ^5.2.0
+  firebase_auth: ^7.1.0
+  google_sign_in: ^7.2.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +80,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/images/app_logo.png
+    - assets/images/products/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

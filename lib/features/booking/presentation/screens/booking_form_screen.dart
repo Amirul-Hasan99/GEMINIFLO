@@ -1,21 +1,32 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+
 import '../../../../core/router/route_names.dart';
+import '../../../../core/constants/api_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../catalog/presentation/providers/catalog_provider.dart';
+import '../../domain/entities/booking.dart';
 import '../providers/booking_provider.dart';
 
 class BookingFormScreen extends ConsumerStatefulWidget {
   final String productId;
+  final DateTime? initialDate;
+  final Booking? initialBooking;
 
-  const BookingFormScreen({super.key, required this.productId});
+  const BookingFormScreen({
+    super.key,
+    required this.productId,
+    this.initialDate,
+    this.initialBooking,
+  });
 
   @override
   ConsumerState<BookingFormScreen> createState() => _BookingFormScreenState();
@@ -30,17 +41,35 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   final _notesCtrl = TextEditingController();
 
   DateTime? _startDate;
-  bool _withDelivery = true;
-  bool _withInstallation = false;
-
-  static const double _deliveryFee = 150000;
-  static const double _installationFee = 100000;
+  // true = Pengiriman & Antar-Jemput oleh Toko (include instalasi)
+  // false = Pick-up / Ambil Sendiri di Florist (include instalasi / mandiri)
+  bool _isStoreDelivery = true;
 
   @override
   void initState() {
     super.initState();
+    final booking = widget.initialBooking;
+    if (booking != null) {
+      _startDate = booking.startDate;
+      _isStoreDelivery = booking.withDelivery;
+      _nameCtrl.text = booking.customerName;
+      _phoneCtrl.text = booking.customerPhone;
+      _addressCtrl.text = booking.withDelivery
+          ? booking.eventAddress
+          : booking.eventAddress.startsWith('Pick-up Florist - Acara di: ')
+          ? booking.eventAddress.replaceFirst(
+              'Pick-up Florist - Acara di: ',
+              '',
+            )
+          : '';
+      _messageCtrl.text = booking.eventMessage;
+      _notesCtrl.text = booking.notes ?? '';
+    } else if (widget.initialDate != null) {
+      _startDate = widget.initialDate;
+    }
     // Pre-fill user data if available
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.initialBooking != null) return;
       final user = ref.read(authStateProvider).user;
       if (user != null) {
         _nameCtrl.text = user.name;
@@ -60,16 +89,23 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   double _calculateTotal(double productPrice) {
-    return productPrice +
-        (_withDelivery ? _deliveryFee : 0) +
-        (_withInstallation ? _installationFee : 0);
+    // Biaya pengiriman dan instalasi sudah include / gratis
+    return productPrice;
   }
 
   Future<void> _pickDate() async {
+    final earliestDate = DateUtils.dateOnly(
+      DateTime.now().add(const Duration(days: 1)),
+    );
+    final selectedDate = _startDate;
+    final initialDate =
+        selectedDate == null || selectedDate.isBefore(earliestDate)
+        ? earliestDate
+        : selectedDate;
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now().add(const Duration(days: 1)),
+      initialDate: initialDate,
+      firstDate: earliestDate,
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) => Theme(
         data: ThemeData(
@@ -93,28 +129,121 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       return;
     }
 
-    final notifier = ref.read(createBookingProvider.notifier);
-    final booking = await notifier.createBooking(
-      productId: widget.productId,
-      productName: productName,
-      productPrice: productPrice,
-      startDate: _startDate!,
-      endDate: _startDate!.add(const Duration(hours: 24)),
-      customerName: _nameCtrl.text.trim(),
-      customerPhone: _phoneCtrl.text.trim(),
-      eventAddress: _addressCtrl.text.trim(),
-      eventMessage: _messageCtrl.text.trim(),
-      notes: _notesCtrl.text.trim().isNotEmpty ? _notesCtrl.text.trim() : null,
-      withDelivery: _withDelivery,
-      withInstallation: _withInstallation,
-    );
+    try {
+      final response = await ref
+          .read(apiClientProvider)
+          .get(
+            ApiConstants.productAvailability(widget.productId),
+            queryParameters: {
+              'start_date': _startDate!.toUtc().toIso8601String(),
+              'end_date': _startDate!
+                  .add(const Duration(hours: 24))
+                  .toUtc()
+                  .toIso8601String(),
+              if (widget.initialBooking != null)
+                'exclude_booking_id': widget.initialBooking!.id,
+            },
+          );
+      final availability = response.data['data'];
+      if (availability is Map && availability['is_available'] != true) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Papan bunga sudah dipesan pada tanggal tersebut.'),
+              backgroundColor: AppColors.statusWarning,
+            ),
+          );
+        }
+        return;
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ketersediaan belum dapat diperiksa: $error')),
+        );
+      }
+      return;
+    }
+
+    Booking? booking;
+    final existing = widget.initialBooking;
+    try {
+      if (existing != null) {
+        booking = await ref
+            .read(myBookingsProvider.notifier)
+            .updateBooking(
+              Booking(
+                id: existing.id,
+                bookingCode: existing.bookingCode,
+                productId: widget.productId,
+                productName: productName,
+                productImageUrl: existing.productImageUrl,
+                customerId: existing.customerId,
+                customerName: _nameCtrl.text.trim(),
+                customerPhone: _phoneCtrl.text.trim(),
+                eventAddress: _isStoreDelivery
+                    ? _addressCtrl.text.trim()
+                    : (_addressCtrl.text.trim().isEmpty
+                          ? 'Pick-up di Florist Geminiflo (Jl. Bunga Mawar No. 12, Pontianak)'
+                          : 'Pick-up Florist - Acara di: ${_addressCtrl.text.trim()}'),
+                eventMessage: _messageCtrl.text.trim(),
+                notes: _notesCtrl.text.trim().isNotEmpty
+                    ? _notesCtrl.text.trim()
+                    : null,
+                startDate: _startDate!,
+                endDate: _startDate!.add(const Duration(hours: 24)),
+                withDelivery: _isStoreDelivery,
+                withInstallation: _isStoreDelivery,
+                subtotal: productPrice,
+                deliveryFee: 0,
+                installationFee: 0,
+                total: _calculateTotal(productPrice),
+                status: existing.status,
+                createdAt: existing.createdAt,
+                paymentDeadline: existing.paymentDeadline,
+              ),
+            );
+      } else {
+        booking = await ref
+            .read(createBookingProvider.notifier)
+            .createBooking(
+              productId: widget.productId,
+              productName: productName,
+              productPrice: productPrice,
+              startDate: _startDate!,
+              endDate: _startDate!.add(const Duration(hours: 24)),
+              customerName: _nameCtrl.text.trim(),
+              customerPhone: _phoneCtrl.text.trim(),
+              eventAddress: _isStoreDelivery
+                  ? _addressCtrl.text.trim()
+                  : (_addressCtrl.text.trim().isEmpty
+                        ? 'Pick-up di Florist Geminiflo (Jl. Bunga Mawar No. 12, Pontianak)'
+                        : 'Pick-up Florist - Acara di: ${_addressCtrl.text.trim()}'),
+              eventMessage: _messageCtrl.text.trim(),
+              notes: _notesCtrl.text.trim().isNotEmpty
+                  ? _notesCtrl.text.trim()
+                  : null,
+              withDelivery: _isStoreDelivery,
+              withInstallation: _isStoreDelivery,
+            );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Pesanan gagal diperbarui: $error')),
+        );
+      }
+      return;
+    }
 
     if (!mounted) return;
     if (booking != null) {
-      unawaited(context.push(RouteNames.bookingConfirmation, extra: {
-        'booking': booking,
-        'productName': productName,
-      }));
+      unawaited(
+        context.push(
+          RouteNames.bookingConfirmation,
+          extra: {'booking': booking, 'productName': productName},
+        ),
+      );
     }
   }
 
@@ -142,9 +271,15 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             elevation: 0,
-            title: const Text(
-              'Form Booking',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+              onPressed: () => context.canPop()
+                  ? context.pop()
+                  : context.go(RouteNames.catalog),
+            ),
+            title: Text(
+              widget.initialBooking == null ? 'Form Booking' : 'Edit Pesanan',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
             ),
           ),
           body: Form(
@@ -194,7 +329,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                CurrencyFormatter.formatIDR(product.pricePerDay),
+                                '${CurrencyFormatter.formatIDR(product.pricePerDay)} / 24 Jam',
                                 style: const TextStyle(
                                   color: AppColors.primary,
                                   fontSize: 14,
@@ -213,13 +348,15 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                   const SizedBox(height: AppSpacing.md),
                   _FormField(
                     label: 'Nama Pemesan',
+                    hint: 'Masukkan nama lengkap Anda',
                     controller: _nameCtrl,
                     validator: (v) =>
                         v == null || v.isEmpty ? 'Nama wajib diisi' : null,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   _FormField(
-                    label: 'Nomor HP',
+                    label: 'Nomor WhatsApp / HP',
+                    hint: 'Contoh: 081234567890',
                     controller: _phoneCtrl,
                     keyboardType: TextInputType.phone,
                     validator: (v) =>
@@ -241,32 +378,134 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_today_outlined,
-                              color: AppColors.primary, size: 20),
+                          const Icon(
+                            Icons.calendar_today_outlined,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
                           const SizedBox(width: 10),
-                          Text(
-                            _startDate != null
-                                ? DateFormat('EEEE, d MMMM yyyy', 'id_ID')
-                                    .format(_startDate!)
-                                : 'Pilih Tanggal Acara',
-                            style: TextStyle(
-                              color: _startDate != null
-                                  ? AppColors.textPrimary
-                                  : AppColors.textMuted,
-                              fontSize: 14,
+                          Expanded(
+                            child: Text(
+                              _startDate != null
+                                  ? DateFormatter.formatFull(_startDate!)
+                                  : 'Pilih Tanggal Acara',
+                              style: TextStyle(
+                                color: _startDate != null
+                                    ? AppColors.textPrimary
+                                    : AppColors.textMuted,
+                                fontSize: 14,
+                                fontWeight: _startDate != null
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                              ),
                             ),
+                          ),
+                          const Icon(
+                            Icons.arrow_drop_down,
+                            color: AppColors.textMuted,
                           ),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
+
+                  // Metode Pengiriman / Penyerahan (Included Pengiriman & Instalasi)
+                  const _SectionTitle('Metode Penyerahan Papan Bunga'),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Biaya sewa sudah mencakup pengiriman & instalasi (Gratis). Silakan pilih metode yang Anda inginkan:',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Option 1: Toko antar-jemput & instalasi
+                  _DeliveryOptionCard(
+                    title: 'Antar - Pasang - Jemput Toko',
+                    badge: 'Include Gratis',
+                    subtitle: 'Papan bunga diantar ke venue, dipasang oleh tim florist, dan dijemput kembali setelah acara selesai.',
+                    icon: Icons.local_shipping_outlined,
+                    isSelected: _isStoreDelivery,
+                    onTap: () => setState(() => _isStoreDelivery = true),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // Option 2: Pick-up sendiri
+                  _DeliveryOptionCard(
+                    title: 'Pick-up / Ambil Sendiri di Toko',
+                    badge: 'Ambil Mandiri',
+                    subtitle: 'Ambil dan kembalikan sendiri papan bunga di workshop Florist Geminiflo. Tanpa biaya tambahan.',
+                    icon: Icons.storefront_outlined,
+                    isSelected: !_isStoreDelivery,
+                    onTap: () => setState(() => _isStoreDelivery = false),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  if (!_isStoreDelivery)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.15),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Icon(
+                            Icons.location_on,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Lokasi Workshop Florist Geminiflo',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  'Jl. Bunga Mawar No. 12, Pontianak (Buka 08:00 - 21:00 WIB).\nSilakan ambil H-1 atau hari H sesuai jadwal acara.',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   _FormField(
-                    label: 'Alamat Acara / Pengiriman',
+                    label: _isStoreDelivery
+                        ? 'Alamat Acara / Pengiriman'
+                        : 'Lokasi Acara (Opsional)',
+                    hint: _isStoreDelivery
+                        ? 'Contoh: Gedung PCC Jl. Sutan Syahrir No. 1, Pontianak'
+                        : 'Nama gedung / lokasi acara (opsional)',
                     controller: _addressCtrl,
                     maxLines: 3,
-                    validator: (v) =>
-                        v == null || v.isEmpty ? 'Alamat wajib diisi' : null,
+                    validator: (v) {
+                      if (_isStoreDelivery && (v == null || v.isEmpty)) {
+                        return 'Alamat pengiriman wajib diisi untuk layanan antar-jemput';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: AppSpacing.md),
                   _FormField(
@@ -274,32 +513,16 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                     hint: 'Contoh: Selamat & Sukses atas Grand Opening...',
                     controller: _messageCtrl,
                     maxLines: 2,
-                    validator: (v) =>
-                        v == null || v.isEmpty ? 'Tulisan pita wajib diisi' : null,
+                    validator: (v) => v == null || v.isEmpty
+                        ? 'Tulisan pita wajib diisi'
+                        : null,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   _FormField(
                     label: 'Catatan Tambahan (Opsional)',
-                    hint: 'Instruksi khusus untuk admin...',
+                    hint: 'Instruksi khusus, posisi penempatan, atau kontak PIC di venue...',
                     controller: _notesCtrl,
                     maxLines: 2,
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-
-                  const _SectionTitle('Layanan Tambahan'),
-                  const SizedBox(height: AppSpacing.md),
-                  _ServiceToggle(
-                    label: 'Pengiriman',
-                    subtitle: CurrencyFormatter.formatIDR(_deliveryFee),
-                    value: _withDelivery,
-                    onChanged: (v) => setState(() => _withDelivery = v),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _ServiceToggle(
-                    label: 'Instalasi',
-                    subtitle: CurrencyFormatter.formatIDR(_installationFee),
-                    value: _withInstallation,
-                    onChanged: (v) => setState(() => _withInstallation = v),
                   ),
                   const SizedBox(height: AppSpacing.xl),
 
@@ -313,17 +536,27 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                     ),
                     child: Column(
                       children: [
-                        _PriceRow('Sewa Papan',
-                            CurrencyFormatter.formatIDR(product.pricePerDay)),
-                        if (_withDelivery)
-                          _PriceRow('Pengiriman',
-                              CurrencyFormatter.formatIDR(_deliveryFee)),
-                        if (_withInstallation)
-                          _PriceRow('Instalasi',
-                              CurrencyFormatter.formatIDR(_installationFee)),
+                        _PriceRow(
+                          'Sewa Papan (24 Jam)',
+                          CurrencyFormatter.formatIDR(product.pricePerDay),
+                        ),
+                        _PriceRow(
+                          'Pengiriman & Antar-Jemput',
+                          _isStoreDelivery
+                              ? 'Gratis (Termasuk)'
+                              : 'Ambil Sendiri (Rp 0)',
+                          valueColor: AppColors.statusSuccess,
+                        ),
+                        _PriceRow(
+                          'Pemasangan di Venue',
+                          _isStoreDelivery
+                              ? 'Gratis (Termasuk)'
+                              : 'Mandiri (Rp 0)',
+                          valueColor: AppColors.statusSuccess,
+                        ),
                         const Divider(color: AppColors.borderLight, height: 16),
                         _PriceRow(
-                          'Total',
+                          'Total Pembayaran',
                           CurrencyFormatter.formatIDR(total),
                           isTotal: true,
                         ),
@@ -332,7 +565,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                   ),
                   const SizedBox(height: AppSpacing.xl),
                   AppButton(
-                    text: 'Lanjut ke Konfirmasi',
+                    text: widget.initialBooking == null
+                        ? 'Lanjut ke Konfirmasi'
+                        : 'Simpan Perubahan',
                     onPressed: () => _submit(product.name, product.pricePerDay),
                     isLoading: bookingState.isLoading,
                     width: double.infinity,
@@ -360,6 +595,120 @@ class _SectionTitle extends StatelessWidget {
         color: AppColors.textPrimary,
         fontSize: 16,
         fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+}
+
+class _DeliveryOptionCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String badge;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _DeliveryOptionCard({
+    required this.title,
+    required this.subtitle,
+    required this.badge,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.04)
+              : AppColors.surfaceWhite,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.border,
+            width: isSelected ? 1.8 : 1.0,
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.primary
+                    : AppColors.surfaceElevated,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? Colors.white : AppColors.primary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 14,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.surfaceElevated,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          badge,
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.textSecondary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -404,11 +753,16 @@ class _FormField extends StatelessWidget {
           style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+            hintStyle: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 14,
+            ),
             filled: true,
             fillColor: AppColors.surfaceWhite,
             contentPadding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md, vertical: 12),
+              horizontal: AppSpacing.md,
+              vertical: 12,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: const BorderSide(color: AppColors.border),
@@ -419,7 +773,10 @@ class _FormField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.secondary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.secondary,
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -428,79 +785,18 @@ class _FormField extends StatelessWidget {
   }
 }
 
-class _ServiceToggle extends StatelessWidget {
-  final String label;
-  final String subtitle;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  const _ServiceToggle({
-    required this.label,
-    required this.subtitle,
-    required this.value,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceWhite,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: value ? AppColors.primary : AppColors.border,
-          width: value ? 1.5 : 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            value ? Icons.check_circle : Icons.circle_outlined,
-            color: value ? AppColors.primary : AppColors.textMuted,
-            size: 20,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: AppColors.primary,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _PriceRow extends StatelessWidget {
   final String label;
   final String value;
   final bool isTotal;
+  final Color? valueColor;
 
-  const _PriceRow(this.label, this.value, {this.isTotal = false});
+  const _PriceRow(
+    this.label,
+    this.value, {
+    this.isTotal = false,
+    this.valueColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -520,7 +816,9 @@ class _PriceRow extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              color: isTotal ? AppColors.primary : AppColors.textPrimary,
+              color: isTotal
+                  ? AppColors.primary
+                  : (valueColor ?? AppColors.textPrimary),
               fontSize: isTotal ? 16 : 13,
               fontWeight: isTotal ? FontWeight.w700 : FontWeight.w600,
             ),

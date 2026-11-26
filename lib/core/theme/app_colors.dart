@@ -11,13 +11,18 @@ class AppColors {
   static const Color onPrimaryContainer = Color(0xFF79A28F);
   static const Color onPrimary = Color(0xFFFFFFFF);
 
-  // Secondary & Accent: Muted Champagne Gold
+  // Secondary & Accent: Muted Champagne Gold & Rose Accent
   static const Color secondary = Color(0xFFC5A059);
   static const Color secondaryDark = Color(0xFF775A19);
   static const Color secondaryContainer = Color(0xFFFED488);
   static const Color onSecondaryContainer = Color(0xFF785A1A);
   static const Color onSecondary = Color(0xFFFFFFFF);
   static const Color goldAccent = Color(0xFFD4AF37);
+
+  // Brand Logo Tokens
+  static const Color brandRose = Color(0xFFA8435C);
+  static const Color brandRoseLight = Color(0xFFB8526F);
+  static const Color brandPinkBg = Color(0xFFFCE4E8);
 
   // Canvas & Surfaces: Soft Cream & Warm Alabaster
   static const Color background = Color(0xFFFBF9F5);

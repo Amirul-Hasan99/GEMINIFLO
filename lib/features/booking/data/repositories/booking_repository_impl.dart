@@ -1,25 +1,28 @@
+import '../datasources/booking_neon_datasource.dart';
 import '../../domain/entities/booking.dart';
 import '../../domain/repositories/booking_repository.dart';
-import '../datasources/booking_mock_datasource.dart';
 
 class BookingRepositoryImpl implements BookingRepository {
-  final BookingMockDataSource mock;
-  final String productName;
-  final double productPrice;
-
-  BookingRepositoryImpl({
-    required this.mock,
-    this.productName = '',
-    this.productPrice = 0,
-  });
-
+  final BookingNeonDataSource remote;
+  BookingRepositoryImpl({required this.remote});
   @override
   Future<List<Booking>> getMyBookings({String? status}) =>
-      mock.getMyBookings(status: status);
-
+      remote.getBookings(status: status);
   @override
-  Future<Booking> getBookingById(String id) => mock.getBookingById(id);
-
+  Future<Booking> getBookingById(String id) => remote.getBookingById(id);
+  @override
+  Future<Booking> updateBooking(Booking booking) =>
+      remote.updateBooking(booking);
+  @override
+  Future<void> deleteBooking(String id) => remote.deleteBooking(id);
+  @override
+  Future<void> updateBookingStatus(String id, BookingStatus status) =>
+      remote.updateBookingStatus(id, status);
+  @override
+  Future<void> markReturned(String id) => remote.markReturned(id);
+  @override
+  Future<void> cancelBooking(String id, {String? reason}) =>
+      remote.cancelBooking(id, reason: reason);
   @override
   Future<Booking> createBooking({
     required String productId,
@@ -32,23 +35,18 @@ class BookingRepositoryImpl implements BookingRepository {
     String? notes,
     required bool withDelivery,
     required bool withInstallation,
-  }) =>
-      mock.createBooking(
-        productId: productId,
-        startDate: startDate,
-        endDate: endDate,
-        customerName: customerName,
-        customerPhone: customerPhone,
-        eventAddress: eventAddress,
-        eventMessage: eventMessage,
-        notes: notes,
-        withDelivery: withDelivery,
-        withInstallation: withInstallation,
-        productPrice: productPrice,
-        productName: productName,
-      );
-
-  @override
-  Future<void> cancelBooking(String id, {String? reason}) =>
-      mock.cancelBooking(id, reason: reason);
+    String? productName,
+    double? productPrice,
+  }) => remote.createBooking(
+    productId: productId,
+    startDate: startDate,
+    endDate: endDate,
+    customerName: customerName,
+    customerPhone: customerPhone,
+    eventAddress: eventAddress,
+    eventMessage: eventMessage,
+    notes: notes,
+    withDelivery: withDelivery,
+    withInstallation: withInstallation,
+  );
 }

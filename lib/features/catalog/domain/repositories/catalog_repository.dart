@@ -14,4 +14,7 @@ abstract class CatalogRepository {
   Future<List<ProductCategory>> getCategories();
   Future<bool> toggleFavorite(String productId);
   Future<List<Product>> getFavorites();
+  Future<Product> addProduct(Product product);
+  Future<Product> updateProduct(Product product);
+  Future<bool> deleteProduct(String id);
 }

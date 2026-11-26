@@ -1,6 +1,7 @@
 class User {
   final String id;
   final String name;
+  final String? username;
   final String email;
   final String? phone;
   final String role; // 'user' or 'admin'
@@ -10,6 +11,7 @@ class User {
   const User({
     required this.id,
     required this.name,
+    this.username,
     required this.email,
     this.phone,
     required this.role,

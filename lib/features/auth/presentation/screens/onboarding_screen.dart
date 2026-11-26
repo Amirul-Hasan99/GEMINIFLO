@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_logo.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -20,20 +22,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     const _OnboardingData(
       icon: Icons.local_florist,
       title: 'Papan Bunga Premium',
-      description:
-          'Koleksi papan bunga elegan untuk setiap momen spesial — pernikahan, grand opening, ucapan selamat, dan duka cita.',
+      description: 'Koleksi papan bunga elegan untuk setiap momen spesial — pernikahan, grand opening, ucapan selamat, dan duka cita.',
     ),
     const _OnboardingData(
       icon: Icons.calendar_today_outlined,
       title: 'Booking Mudah & Cepat',
-      description:
-          'Cek ketersediaan secara real-time, pilih tanggal, dan konfirmasi pesanan Anda dalam hitungan menit.',
+      description: 'Cek ketersediaan secara real-time, pilih tanggal, dan konfirmasi pesanan Anda dalam hitungan menit.',
     ),
     const _OnboardingData(
       icon: Icons.verified_outlined,
-      title: 'Pembayaran Aman',
-      description:
-          'Transfer Bank, E-Wallet, atau QRIS — semua metode didukung dengan verifikasi admin yang cepat dan transparan.',
+      title: 'Pembayaran Aman & Cepat',
+      description: 'Pilih metode pembayaran yang tersedia, unggah bukti, dan pantau verifikasi dari aplikasi.',
     ),
   ];
 
@@ -180,27 +179,8 @@ class _OnboardingPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration container
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [Color(0xFF0F382A), Color(0xFF154D39)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                  blurRadius: 40,
-                  offset: const Offset(0, 16),
-                ),
-              ],
-            ),
-            child: Icon(data.icon, color: AppColors.secondary, size: 80),
-          ),
+          // Logo / Illustration
+          const AppLogo(size: 180),
           const SizedBox(height: 48),
           Text(
             data.title,

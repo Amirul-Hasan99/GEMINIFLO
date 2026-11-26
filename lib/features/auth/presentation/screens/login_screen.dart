@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_logo.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/auth_form_field.dart';
 
@@ -17,14 +19,13 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailCtrl = TextEditingController();
+  final _usernameCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _rememberMe = false;
-  int _selectedRole = 0; // 0 = Penyewa, 1 = Admin
 
   @override
   void dispose() {
-    _emailCtrl.dispose();
+    _usernameCtrl.dispose();
     _passwordCtrl.dispose();
     super.dispose();
   }
@@ -33,7 +34,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     final notifier = ref.read(authStateProvider.notifier);
     final success = await notifier.login(
-      email: _emailCtrl.text.trim(),
+      email: _usernameCtrl.text.trim(),
       password: _passwordCtrl.text,
     );
     if (!mounted) return;
@@ -48,11 +49,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final error = ref.read(authStateProvider).errorMessage;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error ?? 'Login gagal. Periksa email dan password Anda.'),
+          content: Text(
+            error ?? 'Login gagal. Periksa username dan password Anda.',
+          ),
           backgroundColor: AppColors.statusError,
         ),
       );
     }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    final success = await ref
+        .read(authStateProvider.notifier)
+        .loginWithGoogle();
+    if (!mounted) return;
+    if (success) {
+      final auth = ref.read(authStateProvider);
+      context.go(auth.isAdmin ? RouteNames.adminDashboard : RouteNames.home);
+      return;
+    }
+    final error = ref.read(authStateProvider).errorMessage;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error ?? 'Login Google gagal. Coba kembali.'),
+        backgroundColor: AppColors.statusError,
+      ),
+    );
   }
 
   @override
@@ -81,31 +103,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withValues(alpha: 0.1),
-                            border: Border.all(
-                              color: AppColors.secondary.withValues(alpha: 0.4),
-                              width: 1,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.local_florist,
-                            color: AppColors.secondary,
-                            size: 22,
-                          ),
-                        ),
+                        const AppHeaderLogo(size: 48),
                         const SizedBox(width: 12),
-                        const Text(
-                          'Geminiflo_',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'GEMINIFLO_',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.2,
+                                fontFamily: 'serif',
+                              ),
+                            ),
+                            Text(
+                              'EXPRESSED WITH ELEGANCE.',
+                              style: TextStyle(
+                                color: AppColors.secondary,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -137,39 +159,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Role selector
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceElevated,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.all(4),
-                        child: Row(
-                          children: [
-                            _RoleTab(
-                              label: 'Penyewa / Klien',
-                              isActive: _selectedRole == 0,
-                              onTap: () => setState(() => _selectedRole = 0),
-                            ),
-                            _RoleTab(
-                              label: 'Admin Florist',
-                              isActive: _selectedRole == 1,
-                              onTap: () => setState(() => _selectedRole = 1),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
                       AuthFormField(
-                        label: 'Email',
-                        hint: 'masukkan email Anda',
-                        controller: _emailCtrl,
-                        keyboardType: TextInputType.emailAddress,
-                        prefixIcon: Icons.email_outlined,
+                        label: 'Username / Email',
+                        hint: 'masukkan username atau email',
+                        controller: _usernameCtrl,
+                        keyboardType: TextInputType.text,
+                        prefixIcon: Icons.person_outline,
                         textInputAction: TextInputAction.next,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Email wajib diisi';
-                          if (!v.contains('@')) return 'Email tidak valid';
+                          if (v == null || v.trim().isEmpty) {
+                            return 'Username atau email wajib diisi';
+                          }
                           return null;
                         },
                       ),
@@ -182,8 +182,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         prefixIcon: Icons.lock_outlined,
                         textInputAction: TextInputAction.done,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Password wajib diisi';
-                          if (v.length < 6) return 'Password minimal 6 karakter';
+                          if (v == null || v.isEmpty)
+                            return 'Password wajib diisi';
+                          if (v.length < 3)
+                            return 'Password minimal 3 karakter';
                           return null;
                         },
                       ),
@@ -201,7 +203,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   onChanged: (v) =>
                                       setState(() => _rememberMe = v ?? false),
                                   activeColor: AppColors.primary,
-                                  side: const BorderSide(color: AppColors.border),
+                                  side: const BorderSide(
+                                    color: AppColors.border,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4),
                                   ),
@@ -218,7 +222,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ],
                           ),
                           GestureDetector(
-                            onTap: () => context.push(RouteNames.forgotPassword),
+                            onTap: () =>
+                                context.push(RouteNames.forgotPassword),
                             child: const Text(
                               'Lupa Password?',
                               style: TextStyle(
@@ -237,32 +242,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         isLoading: authState.isLoading,
                         width: double.infinity,
                       ),
-                      const SizedBox(height: AppSpacing.lg),
-                      // Divider
-                      const Row(
-                        children: [
-                          Expanded(child: Divider(color: AppColors.border)),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              'atau',
-                              style: TextStyle(
-                                color: AppColors.textMuted,
-                                fontSize: 13,
-                              ),
+                      const SizedBox(height: AppSpacing.md),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: OutlinedButton.icon(
+                          onPressed: authState.isLoading
+                              ? null
+                              : _loginWithGoogle,
+                          icon: const Icon(Icons.g_mobiledata, size: 26),
+                          label: const Text('Masuk dengan Google'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.textPrimary,
+                            side: const BorderSide(color: AppColors.border),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          Expanded(child: Divider(color: AppColors.border)),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      // Social login (placeholder)
-                      const AppButton(
-                        text: 'Masuk dengan Google',
-                        onPressed: null,
-                        type: ButtonType.outlined,
-                        width: double.infinity,
-                        icon: Icon(Icons.g_mobiledata, size: 24),
+                        ),
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       // Register link
@@ -296,44 +293,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RoleTab extends StatelessWidget {
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const _RoleTab({
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: isActive ? AppColors.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: isActive ? Colors.white : AppColors.textSecondary,
-              fontSize: 13,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
-            ),
           ),
         ),
       ),

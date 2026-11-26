@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_bottom_nav.dart';
@@ -40,7 +42,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
         elevation: 0,
         title: const Text(
           'Katalog Papan Bunga',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
         ),
         actions: [
           IconButton(
@@ -169,15 +171,15 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   void _handleNavTap(BuildContext context, int i) {
     switch (i) {
       case 0:
-        Navigator.of(context).popUntil((r) => r.isFirst);
+        context.go(RouteNames.home);
         break;
       case 1:
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/orders');
+        context.go(RouteNames.orders);
         break;
       case 3:
-        Navigator.pushReplacementNamed(context, '/profile');
+        context.go(RouteNames.profile);
         break;
     }
   }

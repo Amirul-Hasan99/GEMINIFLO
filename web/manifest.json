@@ -1,11 +1,11 @@
 {
-    "name": "geminiflo_booking",
-    "short_name": "geminiflo_booking",
+    "name": "Geminiflow",
+    "short_name": "Geminiflow",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FBF9F5",
+    "theme_color": "#0F382A",
+    "description": "Geminiflow Florist - pemesanan papan bunga dengan layanan profesional.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,18 +1,23 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/datasources/booking_mock_datasource.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../data/datasources/booking_neon_datasource.dart';
 import '../../data/repositories/booking_repository_impl.dart';
 import '../../domain/entities/booking.dart';
 import '../../domain/repositories/booking_repository.dart';
+import '../../../notifications/domain/entities/app_notification.dart';
+import '../../../notifications/presentation/providers/notification_provider.dart';
+import '../../../catalog/presentation/providers/catalog_provider.dart';
 
-final bookingMockDataSourceProvider = Provider<BookingMockDataSource>((ref) {
-  return BookingMockDataSource();
+final bookingNeonDataSourceProvider = Provider<BookingNeonDataSource>((ref) {
+  return BookingNeonDataSource(ref.watch(apiClientProvider));
 });
 
 final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
   return BookingRepositoryImpl(
-    mock: ref.watch(bookingMockDataSourceProvider),
+    remote: ref.watch(bookingNeonDataSourceProvider),
   );
 });
 
@@ -60,16 +65,78 @@ class MyBookingsNotifier extends Notifier<MyBookingsState> {
     }
   }
 
+  void _refreshAvailability(String? productId) {
+    unawaited(ref.read(catalogProvider.notifier).loadProducts());
+    if (productId != null && productId.isNotEmpty) {
+      ref.invalidate(productDetailProvider(productId));
+    }
+  }
+
   Future<void> cancelBooking(String id, {String? reason}) async {
+    final productId = state.bookings.where((b) => b.id == id).firstOrNull?.productId;
     final repo = ref.read(bookingRepositoryProvider);
     await repo.cancelBooking(id, reason: reason);
     await loadBookings();
+    _refreshAvailability(productId);
+    unawaited(
+      ref
+          .read(notificationProvider.notifier)
+          .addNotification(
+            title: 'Pesanan Dibatalkan',
+            message: 'Pesanan #$id telah dibatalkan.',
+            type: NotificationType.orderCancelled,
+            bookingId: id,
+          ),
+    );
+  }
+
+  Future<void> updateBookingStatus(String id, BookingStatus status) async {
+    final productId = state.bookings.where((b) => b.id == id).firstOrNull?.productId;
+    await ref.read(bookingRepositoryProvider).updateBookingStatus(id, status);
+    await loadBookings();
+    _refreshAvailability(productId);
+  }
+
+  Future<void> markReturned(String id) async {
+    final productId = state.bookings.where((b) => b.id == id).firstOrNull?.productId;
+    await ref.read(bookingRepositoryProvider).markReturned(id);
+    await loadBookings();
+    _refreshAvailability(productId);
+  }
+
+  Future<void> deleteBooking(String id) async {
+    final productId = state.bookings.where((b) => b.id == id).firstOrNull?.productId;
+    await ref.read(bookingRepositoryProvider).deleteBooking(id);
+    await loadBookings();
+    _refreshAvailability(productId);
+  }
+
+  Future<Booking> updateBooking(Booking booking) async {
+    final updated = await ref
+        .read(bookingRepositoryProvider)
+        .updateBooking(booking);
+    await loadBookings();
+    _refreshAvailability(booking.productId);
+    unawaited(
+      ref
+          .read(notificationProvider.notifier)
+          .addNotification(
+            title: 'Pesanan Diperbarui',
+            message:
+                'Rincian pesanan ${booking.bookingCode} berhasil diperbarui.',
+            type: NotificationType.orderStatusChanged,
+            bookingId: booking.id,
+            bookingCode: booking.bookingCode,
+          ),
+    );
+    return updated;
   }
 }
 
-final myBookingsProvider = NotifierProvider<MyBookingsNotifier, MyBookingsState>(
-  MyBookingsNotifier.new,
-);
+final myBookingsProvider =
+    NotifierProvider<MyBookingsNotifier, MyBookingsState>(
+      MyBookingsNotifier.new,
+    );
 
 // Create booking state
 class CreateBookingState {
@@ -117,24 +184,39 @@ class CreateBookingNotifier extends Notifier<CreateBookingState> {
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final mock = ref.read(bookingMockDataSourceProvider);
-      final booking = await mock.createBooking(
-        productId: productId,
-        startDate: startDate,
-        endDate: endDate,
-        customerName: customerName,
-        customerPhone: customerPhone,
-        eventAddress: eventAddress,
-        eventMessage: eventMessage,
-        notes: notes,
-        withDelivery: withDelivery,
-        withInstallation: withInstallation,
-        productPrice: productPrice,
-        productName: productName,
-      );
+      final booking = await ref
+          .read(bookingRepositoryProvider)
+          .createBooking(
+            productId: productId,
+            startDate: startDate,
+            endDate: endDate,
+            customerName: customerName,
+            customerPhone: customerPhone,
+            eventAddress: eventAddress,
+            eventMessage: eventMessage,
+            notes: notes,
+            withDelivery: withDelivery,
+            withInstallation: withInstallation,
+            productName: productName,
+            productPrice: productPrice,
+          );
       state = state.copyWith(isLoading: false, createdBooking: booking);
+      unawaited(ref.read(catalogProvider.notifier).loadProducts());
+      ref.invalidate(productDetailProvider(productId));
       // Refresh orders list (fire-and-forget; booking list will update in background)
       unawaited(ref.read(myBookingsProvider.notifier).loadBookings());
+      unawaited(
+        ref
+            .read(notificationProvider.notifier)
+            .addNotification(
+              title: 'Pesanan Berhasil Dibuat',
+              message:
+                  'Pesanan #${booking.bookingCode} untuk $productName berhasil dibuat. Silakan selesaikan pembayaran.',
+              type: NotificationType.orderCreated,
+              bookingId: booking.id,
+              bookingCode: booking.bookingCode,
+            ),
+      );
       return booking;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -143,6 +225,7 @@ class CreateBookingNotifier extends Notifier<CreateBookingState> {
   }
 }
 
-final createBookingProvider = NotifierProvider<CreateBookingNotifier, CreateBookingState>(
-  CreateBookingNotifier.new,
-);
+final createBookingProvider =
+    NotifierProvider<CreateBookingNotifier, CreateBookingState>(
+      CreateBookingNotifier.new,
+    );

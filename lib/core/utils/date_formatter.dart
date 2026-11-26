@@ -46,6 +46,13 @@ class DateFormatter {
     return '${formatShort(dateTime)}, ${formatTime(dateTime)}';
   }
 
+  static String formatDeadline(DateTime dateTime) {
+    final monthName = _months[dateTime.month - 1].substring(0, 3);
+    final hours = dateTime.hour.toString().padLeft(2, '0');
+    final minutes = dateTime.minute.toString().padLeft(2, '0');
+    return '${dateTime.day} $monthName ${dateTime.year}, $hours:$minutes';
+  }
+
   static String formatDuration(Duration duration) {
     final hours = duration.inHours.toString().padLeft(2, '0');
     final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');

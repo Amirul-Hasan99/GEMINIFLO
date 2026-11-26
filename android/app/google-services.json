@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "96739644399",
+    "firebase_url": "https://geminiflo-3d7f0-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "geminiflo-3d7f0",
+    "storage_bucket": "geminiflo-3d7f0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96739644399:android:1d01cc465f17cb87599c1a",
+        "android_client_info": {
+          "package_name": "com.geminiflo.geminiflo_booking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "96739644399-aodfcgqsin1r9js34v898v72u46ojhpc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmQOVp3tSQ8M0CZTU5KKKp_EsS_A15VjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "96739644399-aodfcgqsin1r9js34v898v72u46ojhpc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

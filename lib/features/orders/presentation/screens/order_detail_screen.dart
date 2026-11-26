@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../booking/domain/entities/booking.dart';
 import '../../../booking/presentation/providers/booking_provider.dart';
+import '../../../reviews/presentation/providers/review_provider.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
@@ -26,7 +27,10 @@ class OrderDetailScreen extends ConsumerWidget {
 
     if (booking == null) {
       return Scaffold(
-        appBar: AppBar(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+        appBar: AppBar(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+        ),
         body: const Center(child: Text('Pesanan tidak ditemukan')),
       );
     }
@@ -37,6 +41,11 @@ class OrderDetailScreen extends ConsumerWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go(RouteNames.orders),
+        ),
         title: Text(
           booking.bookingCode,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
@@ -58,8 +67,11 @@ class OrderDetailScreen extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(_statusIcon(booking.status),
-                      color: _statusColor(booking.status), size: 20),
+                  Icon(
+                    _statusIcon(booking.status),
+                    color: _statusColor(booking.status),
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     booking.status.label,
@@ -81,8 +93,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 _DetailRow('Produk', booking.productName),
                 _DetailRow(
                   'Tanggal Acara',
-                  DateFormat('EEEE, d MMMM yyyy', 'id_ID')
-                      .format(booking.startDate),
+                  DateFormatter.formatFull(booking.startDate),
                 ),
                 _DetailRow('Nama Pemesan', booking.customerName),
                 _DetailRow('No. HP', booking.customerPhone),
@@ -91,9 +102,11 @@ class OrderDetailScreen extends ConsumerWidget {
                 if (booking.notes != null)
                   _DetailRow('Catatan', booking.notes!),
                 _DetailRow(
-                    'Pengiriman', booking.withDelivery ? 'Ya' : 'Tidak'),
-                _DetailRow(
-                    'Instalasi', booking.withInstallation ? 'Ya' : 'Tidak'),
+                  'Metode Penyerahan',
+                  booking.withDelivery
+                      ? 'Antar - Pasang - Jemput Toko'
+                      : 'Pick-up Sendiri di Toko',
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
@@ -101,14 +114,28 @@ class OrderDetailScreen extends ConsumerWidget {
             _SectionCard(
               title: 'Rincian Biaya',
               children: [
-                _DetailRow('Sewa Papan',
-                    CurrencyFormatter.formatIDR(booking.subtotal)),
-                if (booking.withDelivery)
-                  _DetailRow('Pengiriman',
-                      CurrencyFormatter.formatIDR(booking.deliveryFee)),
-                if (booking.withInstallation)
-                  _DetailRow('Instalasi',
-                      CurrencyFormatter.formatIDR(booking.installationFee)),
+                _DetailRow(
+                  'Sewa Papan (24 Jam)',
+                  CurrencyFormatter.formatIDR(booking.subtotal),
+                ),
+                _DetailRow(
+                  'Pengiriman & Antar-Jemput',
+                  booking.withDelivery
+                      ? (booking.deliveryFee > 0
+                            ? CurrencyFormatter.formatIDR(booking.deliveryFee)
+                            : 'Gratis (Termasuk)')
+                      : 'Ambil Sendiri (Rp 0)',
+                ),
+                _DetailRow(
+                  'Pemasangan di Venue',
+                  booking.withInstallation
+                      ? (booking.installationFee > 0
+                            ? CurrencyFormatter.formatIDR(
+                                booking.installationFee,
+                              )
+                            : 'Gratis (Termasuk)')
+                      : 'Mandiri (Rp 0)',
+                ),
                 const Divider(color: AppColors.borderLight, height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,12 +162,41 @@ class OrderDetailScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.xl),
 
+            if (booking.status == BookingStatus.completed)
+              _BookingReviewEntry(
+                bookingId: booking.id,
+                productId: booking.productId,
+              ),
+
             // CTAs
             if (booking.status == BookingStatus.pendingPayment) ...[
+              AppButton(
+                text: 'Edit Rincian Pesanan',
+                type: ButtonType.outlined,
+                onPressed: () => context.push(
+                  '/booking/${booking.productId}',
+                  extra: {'booking': booking},
+                ),
+                width: double.infinity,
+              ),
+              const SizedBox(height: AppSpacing.sm),
               AppButton(
                 text: 'Bayar Sekarang',
                 onPressed: () =>
                     context.push(RouteNames.paymentPath(booking.id)),
+                width: double.infinity,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              AppButton(
+                text: 'Upload Bukti / Konfirmasi WA',
+                type: ButtonType.outlined,
+                icon: const Icon(
+                  Icons.receipt_long_outlined,
+                  size: 18,
+                  color: AppColors.primary,
+                ),
+                onPressed: () =>
+                    context.push(RouteNames.paymentProofPath(booking.id)),
                 width: double.infinity,
               ),
               const SizedBox(height: AppSpacing.md),
@@ -151,43 +207,24 @@ class OrderDetailScreen extends ConsumerWidget {
                 width: double.infinity,
               ),
             ],
-
-            // WhatsApp CTA for verified payment
-            if (booking.status == BookingStatus.confirmed ||
-                booking.status == BookingStatus.processing) ...[
-              AppButton(
-                text: 'Konfirmasi via WhatsApp',
-                icon: const Icon(Icons.chat_outlined,
-                    size: 18, color: Colors.white),
-                onPressed: () => _openWhatsApp(booking.bookingCode),
-                width: double.infinity,
-              ),
-            ],
           ],
         ),
       ),
     );
   }
 
-  Future<void> _openWhatsApp(String bookingCode) async {
-    const phone = '628123456789'; // from business settings
-    final message = Uri.encodeComponent(
-      'Halo Admin Geminiflo_, saya ingin mengkonfirmasi pesanan saya dengan kode $bookingCode. Mohon bantuannya.',
-    );
-    final uri = Uri.parse('https://wa.me/$phone?text=$message');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
   Future<void> _cancelBooking(
-      BuildContext context, WidgetRef ref, String id) async {
+    BuildContext context,
+    WidgetRef ref,
+    String id,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Batalkan Pesanan?'),
         content: const Text(
-            'Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan.'),
+          'Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -262,6 +299,116 @@ class OrderDetailScreen extends ConsumerWidget {
   }
 }
 
+class _BookingReviewEntry extends ConsumerWidget {
+  const _BookingReviewEntry({required this.bookingId, required this.productId});
+  final String bookingId;
+  final String productId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final review = ref.watch(bookingReviewProvider(bookingId));
+    return review.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (existing) => Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+        child: existing != null
+            ? const Text(
+                'Terima kasih, ulasan Anda sudah tersimpan.',
+                style: TextStyle(
+                  color: AppColors.statusSuccess,
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            : AppButton(
+                text: 'Beri Rating dan Ulasan',
+                type: ButtonType.outlined,
+                icon: const Icon(Icons.star_outline, size: 18),
+                onPressed: () => _showReviewDialog(context, ref),
+                width: double.infinity,
+              ),
+      ),
+    );
+  }
+
+  Future<void> _showReviewDialog(BuildContext context, WidgetRef ref) async {
+    var rating = 5;
+    final comment = TextEditingController();
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Bagaimana pengalaman Anda?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  5,
+                  (index) => IconButton(
+                    onPressed: () => setDialogState(() => rating = index + 1),
+                    icon: Icon(
+                      index < rating ? Icons.star : Icons.star_border,
+                      color: const Color(0xFFB7791F),
+                    ),
+                  ),
+                ),
+              ),
+              TextField(
+                controller: comment,
+                maxLines: 4,
+                maxLength: 2000,
+                decoration: const InputDecoration(
+                  labelText: 'Ulasan (opsional)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Batal'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Kirim'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (saved != true) {
+      comment.dispose();
+      return;
+    }
+    try {
+      await ref
+          .read(reviewDataSourceProvider)
+          .submit(
+            bookingId: bookingId,
+            rating: rating,
+            comment: comment.text.trim(),
+          );
+      ref.invalidate(bookingReviewProvider(bookingId));
+      ref.invalidate(productReviewsProvider(productId));
+      ref.invalidate(adminReviewsProvider);
+      if (context.mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Terima kasih atas ulasan Anda.')),
+        );
+    } catch (error) {
+      if (context.mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Ulasan gagal dikirim: $error')));
+    } finally {
+      comment.dispose();
+    }
+  }
+}
+
 class _SectionCard extends StatelessWidget {
   final String title;
   final List<Widget> children;
@@ -318,10 +465,7 @@ class _DetailRow extends StatelessWidget {
             width: 120,
             child: Text(
               label,
-              style: const TextStyle(
-                color: AppColors.textMuted,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
             ),
           ),
           Expanded(

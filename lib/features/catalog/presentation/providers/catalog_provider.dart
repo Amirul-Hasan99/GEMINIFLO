@@ -1,19 +1,17 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/datasources/catalog_mock_datasource.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../data/datasources/catalog_neon_datasource.dart';
 import '../../data/repositories/catalog_repository_impl.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/entities/product_category.dart';
 import '../../domain/repositories/catalog_repository.dart';
 
-final catalogMockDataSourceProvider = Provider<CatalogMockDataSource>((ref) {
-  return CatalogMockDataSource();
-});
-
 final catalogRepositoryProvider = Provider<CatalogRepository>((ref) {
   return CatalogRepositoryImpl(
-    mockDataSource: ref.watch(catalogMockDataSourceProvider),
+    remoteDataSource: CatalogNeonDataSource(ref.watch(apiClientProvider)),
   );
 });
 
@@ -30,12 +28,7 @@ class CatalogFilter {
   final String? sortBy;
   final String? date;
 
-  const CatalogFilter({
-    this.categoryId,
-    this.search,
-    this.sortBy,
-    this.date,
-  });
+  const CatalogFilter({this.categoryId, this.search, this.sortBy, this.date});
 
   CatalogFilter copyWith({
     String? categoryId,
@@ -125,6 +118,44 @@ class CatalogNotifier extends Notifier<CatalogState> {
   void setSortBy(String? sortBy) {
     setFilter(state.filter.copyWith(sortBy: sortBy));
   }
+
+  Future<Product?> addProduct(Product product) async {
+    try {
+      final repo = ref.read(catalogRepositoryProvider);
+      final newProduct = await repo.addProduct(product);
+      await loadProducts();
+      return newProduct;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return null;
+    }
+  }
+
+  Future<Product?> updateProduct(Product product) async {
+    try {
+      final repo = ref.read(catalogRepositoryProvider);
+      final updated = await repo.updateProduct(product);
+      await loadProducts();
+      return updated;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return null;
+    }
+  }
+
+  Future<bool> deleteProduct(String id) async {
+    try {
+      final repo = ref.read(catalogRepositoryProvider);
+      final success = await repo.deleteProduct(id);
+      if (success) {
+        await loadProducts();
+      }
+      return success;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
 }
 
 final catalogProvider = NotifierProvider<CatalogNotifier, CatalogState>(
@@ -132,8 +163,10 @@ final catalogProvider = NotifierProvider<CatalogNotifier, CatalogState>(
 );
 
 // Single product detail
-final productDetailProvider =
-    FutureProvider.family<Product, String>((ref, id) async {
+final productDetailProvider = FutureProvider.family<Product, String>((
+  ref,
+  id,
+) async {
   final repo = ref.watch(catalogRepositoryProvider);
   return repo.getProductById(id);
 });

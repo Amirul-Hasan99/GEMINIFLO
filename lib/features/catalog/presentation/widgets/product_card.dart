@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/widgets/status_badge.dart';
+import '../../../../core/widgets/product_image.dart';
 import '../../domain/entities/product.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback? onFavorite;
 
-  const ProductCard({
-    super.key,
-    required this.product,
-    this.onFavorite,
-  });
+  const ProductCard({super.key, required this.product, this.onFavorite});
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +47,7 @@ class ProductCard extends StatelessWidget {
                     width: double.infinity,
                     color: AppColors.surfaceElevated,
                     child: product.imageUrls.isNotEmpty
-                        ? Image.network(
-                            product.imageUrls.first,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) =>
-                                _PlaceholderImage(category: product.categoryName),
-                          )
+                        ? ProductImage(source: product.imageUrls.first)
                         : _PlaceholderImage(category: product.categoryName),
                   ),
                 ),
@@ -92,7 +85,9 @@ class ProductCard extends StatelessWidget {
                   // Category
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(4),
@@ -140,10 +135,7 @@ class ProductCard extends StatelessWidget {
                   ),
                   const Text(
                     '/ 24 jam',
-                    style: TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 10,
-                    ),
+                    style: TextStyle(color: AppColors.textMuted, fontSize: 10),
                   ),
                   const SizedBox(height: 8),
                   // CTA Button
@@ -154,7 +146,8 @@ class ProductCard extends StatelessWidget {
                       onPressed: product.availabilityStatus == 'unavailable'
                           ? null
                           : () => context.push(
-                              RouteNames.productDetailPath(product.id)),
+                              RouteNames.productDetailPath(product.id),
+                            ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
@@ -166,7 +159,10 @@ class ProductCard extends StatelessWidget {
                       ),
                       child: const Text(
                         'Lihat Detail',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),

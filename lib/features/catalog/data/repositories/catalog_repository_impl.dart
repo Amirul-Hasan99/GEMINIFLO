@@ -1,19 +1,15 @@
 import '../../domain/entities/product.dart';
 import '../../domain/entities/product_category.dart';
 import '../../domain/repositories/catalog_repository.dart';
-import '../datasources/catalog_mock_datasource.dart';
+import '../datasources/catalog_neon_datasource.dart';
 
 class CatalogRepositoryImpl implements CatalogRepository {
-  final CatalogMockDataSource mockDataSource;
-
-  CatalogRepositoryImpl({required this.mockDataSource});
+  final CatalogNeonDataSource remoteDataSource;
+  CatalogRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<ProductCategory>> getCategories() async {
-    // Future: call a backend REST API here when AppConfig.useNeonDb is true.
-    return mockDataSource.getCategories();
-  }
-
+  Future<List<ProductCategory>> getCategories() =>
+      remoteDataSource.getCategories();
   @override
   Future<List<Product>> getProducts({
     String? categoryId,
@@ -22,25 +18,27 @@ class CatalogRepositoryImpl implements CatalogRepository {
     String? date,
     int page = 1,
     int perPage = 10,
-  }) async {
-    return mockDataSource.getProducts(
-      categoryId: categoryId,
-      search: search,
-      sortBy: sortBy,
-      page: page,
-      perPage: perPage,
-    );
-  }
-
+  }) => remoteDataSource.getProducts(
+    categoryId: categoryId,
+    search: search,
+    sortBy: sortBy,
+    page: page,
+    perPage: perPage,
+  );
   @override
-  Future<Product> getProductById(String id) async {
-    return mockDataSource.getProductById(id);
-  }
-
+  Future<Product> getProductById(String id) =>
+      remoteDataSource.getProductById(id);
   @override
   Future<bool> toggleFavorite(String productId) =>
-      mockDataSource.toggleFavorite(productId);
-
+      remoteDataSource.toggleFavorite(productId);
   @override
-  Future<List<Product>> getFavorites() => mockDataSource.getFavorites();
+  Future<List<Product>> getFavorites() => remoteDataSource.getFavorites();
+  @override
+  Future<Product> addProduct(Product product) =>
+      remoteDataSource.addProduct(product);
+  @override
+  Future<Product> updateProduct(Product product) =>
+      remoteDataSource.updateProduct(product);
+  @override
+  Future<bool> deleteProduct(String id) => remoteDataSource.deleteProduct(id);
 }

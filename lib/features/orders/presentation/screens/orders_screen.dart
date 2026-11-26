@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/app_bottom_nav.dart';
 import '../../../../core/widgets/empty_widget.dart';
 import '../../../../core/widgets/loading_widget.dart';
@@ -55,7 +55,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
         elevation: 0,
         title: const Text(
           'Pesanan Saya',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
         ),
         bottom: TabBar(
           controller: _tabController,
@@ -266,8 +266,7 @@ class _OrderCard extends StatelessWidget {
                           size: 14, color: AppColors.textMuted),
                       const SizedBox(width: 4),
                       Text(
-                        DateFormat('d MMM yyyy', 'id_ID')
-                            .format(booking.startDate),
+                        DateFormatter.formatShort(booking.startDate),
                         style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,

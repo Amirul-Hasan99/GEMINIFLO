@@ -29,21 +29,41 @@ class AuthRemoteDataSource {
     };
   }
 
+  Future<Map<String, dynamic>> loginWithGoogle(String idToken) async {
+    final response = await _apiClient.post(
+      ApiConstants.googleLogin,
+      data: {'id_token': idToken},
+    );
+    final apiResponse = ApiResponse.fromJson(
+      response.data,
+      (json) => json as Map<String, dynamic>,
+    );
+    final data = apiResponse.data!;
+    return {
+      'user': UserModel.fromJson(data['user'] as Map<String, dynamic>),
+      'token': data['token'].toString(),
+    };
+  }
+
   Future<Map<String, dynamic>> register({
     required String name,
     required String email,
     required String password,
     required String passwordConfirmation,
+    String? username,
     String? phone,
+    String? avatar,
   }) async {
     final response = await _apiClient.post(
       ApiConstants.register,
       data: {
         'name': name,
+        'username': username,
         'email': email,
         'password': password,
         'password_confirmation': passwordConfirmation,
         'phone': phone,
+        'avatar': avatar,
       },
     );
 
@@ -64,10 +84,7 @@ class AuthRemoteDataSource {
   }
 
   Future<void> forgotPassword(String email) async {
-    await _apiClient.post(
-      ApiConstants.forgotPassword,
-      data: {'email': email},
-    );
+    await _apiClient.post(ApiConstants.forgotPassword, data: {'email': email});
   }
 
   Future<void> resetPassword({
@@ -103,16 +120,26 @@ class AuthRemoteDataSource {
   }) async {
     final response = await _apiClient.put(
       ApiConstants.profile,
-      data: {
-        'name': name,
-        'phone': phone,
-        'avatar': avatar,
-      },
+      data: {'name': name, 'phone': phone, 'avatar': avatar},
     );
     final apiResponse = ApiResponse.fromJson(
       response.data,
       (json) => UserModel.fromJson(json as Map<String, dynamic>),
     );
     return apiResponse.data!;
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await _apiClient.post(
+      ApiConstants.changePassword,
+      data: {
+        'current_password': currentPassword,
+        'password': newPassword,
+        'password_confirmation': newPassword,
+      },
+    );
   }
 }

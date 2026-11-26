@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../domain/entities/payment.dart';
@@ -27,7 +28,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     super.initState();
     // Trigger load after first frame so ref is available
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(paymentProvider.notifier).initialise(
+      ref
+          .read(paymentProvider.notifier)
+          .initialise(
             bookingId: widget.bookingId,
             amount: 0.0, // amount will be fetched from backend
           );
@@ -56,6 +59,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go(RouteNames.orders),
+        ),
         title: const Text(
           'Pembayaran',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
@@ -104,7 +112,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
-                          'Batas waktu: ${DateFormat('d MMM yyyy, HH:mm', 'id_ID').format(payment.deadline)}',
+                          'Batas waktu: ${DateFormatter.formatDeadline(payment.deadline)} WIB',
                           style: const TextStyle(
                             color: AppColors.statusError,
                             fontSize: 12,
@@ -116,17 +124,60 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               ),
             const SizedBox(height: AppSpacing.xl),
 
-            if (payment?.status == PaymentStatus.unpaid ||
-                payment?.status == PaymentStatus.rejected) ...[
-              const Text(
-                'Pilih Metode Pembayaran',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+            if (paymentState.error != null) ...[
+              Text(
+                paymentState.error!,
+                style: const TextStyle(color: AppColors.statusError),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
+            if (methods.isEmpty &&
+                (payment?.status == PaymentStatus.unpaid ||
+                    payment?.status == PaymentStatus.rejected)) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.statusWarningBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.statusWarning.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.info_outline, color: AppColors.statusWarning),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Metode pembayaran sedang belum tersedia. Silakan hubungi admin untuk menyelesaikan pembayaran.',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 13,
+                          height: 1.45,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
+            ],
+
+            if (payment?.status == PaymentStatus.unpaid ||
+                payment?.status == PaymentStatus.rejected) ...[
+              if (methods.isNotEmpty) ...[
+                const Text(
+                  'Pilih Metode Pembayaran',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+              ],
               // Method tabs
               ...List.generate(methods.length, (i) {
                 final method = methods[i];
@@ -141,7 +192,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                       color: AppColors.surfaceWhite,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isSelected ? AppColors.primary : AppColors.border,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.border,
                         width: isSelected ? 1.5 : 1,
                       ),
                     ),
@@ -189,7 +242,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           isSelected
                               ? Icons.radio_button_checked
                               : Icons.radio_button_unchecked,
-                          color: isSelected ? AppColors.primary : AppColors.border,
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.border,
                         ),
                       ],
                     ),
@@ -203,34 +258,44 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 _AccountDetails(method: methods[selectedIndex]),
               ],
 
-              const SizedBox(height: AppSpacing.xl),
-              AppButton(
-                text: 'Upload Bukti Pembayaran',
-                onPressed: () => context.push(
-                  RouteNames.paymentPath(widget.bookingId),
-                  extra: {'mode': 'upload'},
+              if (methods.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.xl),
+                AppButton(
+                  text: 'Upload Bukti Pembayaran',
+                  onPressed: () => context.push(
+                    RouteNames.paymentProofPath(widget.bookingId),
+                  ),
+                  width: double.infinity,
+                  icon: const Icon(
+                    Icons.upload_outlined,
+                    size: 20,
+                    color: Colors.white,
+                  ),
                 ),
-                width: double.infinity,
-                icon: const Icon(Icons.upload_outlined, size: 20, color: Colors.white),
-              ),
+              ],
             ],
 
             if (payment?.status == PaymentStatus.waitingVerification) ...[
               const SizedBox(height: AppSpacing.md),
               Container(
+                width: double.infinity,
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
                   color: AppColors.statusWarningBg,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: AppColors.statusWarning.withValues(alpha: 0.3)),
+                    color: AppColors.statusWarning.withValues(alpha: 0.3),
+                  ),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.hourglass_empty,
-                        color: AppColors.statusWarning, size: 48),
-                    SizedBox(height: 12),
-                    Text(
+                    const Icon(
+                      Icons.hourglass_empty,
+                      color: AppColors.statusWarning,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
                       'Menunggu Verifikasi Admin',
                       style: TextStyle(
                         color: AppColors.statusWarning,
@@ -238,9 +303,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Bukti pembayaran Anda sedang diverifikasi oleh admin. Biasanya membutuhkan waktu 1-2 jam.',
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Bukti pembayaran Anda tersimpan dan sedang menunggu verifikasi admin.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppColors.textSecondary,
@@ -248,6 +313,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                         height: 1.5,
                       ),
                     ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -264,8 +330,6 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         return Icons.account_balance_outlined;
       case 'ewallet':
         return Icons.phone_android_outlined;
-      case 'qris':
-        return Icons.qr_code;
       default:
         return Icons.payment_outlined;
     }
@@ -377,8 +441,7 @@ class _AccountDetails extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Clipboard.setData(
-                      ClipboardData(text: method.accountNumber!));
+                  Clipboard.setData(ClipboardData(text: method.accountNumber!));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Nomor rekening disalin'),
@@ -388,8 +451,11 @@ class _AccountDetails extends StatelessWidget {
                 },
                 child: const Row(
                   children: [
-                    Icon(Icons.copy_outlined,
-                        size: 16, color: AppColors.primary),
+                    Icon(
+                      Icons.copy_outlined,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
                     SizedBox(width: 4),
                     Text(
                       'Salin',
@@ -407,10 +473,7 @@ class _AccountDetails extends StatelessWidget {
           if (method.accountName != null)
             Text(
               'a.n. ${method.accountName}',
-              style: const TextStyle(
-                color: AppColors.textMuted,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
             ),
         ],
       ),

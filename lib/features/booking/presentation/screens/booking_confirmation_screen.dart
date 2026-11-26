@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../domain/entities/booking.dart';
 
@@ -29,6 +29,11 @@ class BookingConfirmationScreen extends StatelessWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go(RouteNames.catalog),
+        ),
         title: const Text(
           'Konfirmasi Booking',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
@@ -79,7 +84,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                 _InfoItem('Produk', booking.productName),
                 _InfoItem(
                   'Tanggal Acara',
-                  DateFormat('EEEE, d MMMM yyyy', 'id_ID').format(booking.startDate),
+                  DateFormatter.formatFull(booking.startDate),
                 ),
                 _InfoItem('Nama Pemesan', booking.customerName),
                 _InfoItem('Nomor HP', booking.customerPhone),
@@ -88,9 +93,11 @@ class BookingConfirmationScreen extends StatelessWidget {
                 if (booking.notes != null)
                   _InfoItem('Catatan', booking.notes!),
                 _InfoItem(
-                    'Pengiriman', booking.withDelivery ? 'Ya' : 'Tidak'),
-                _InfoItem(
-                    'Instalasi', booking.withInstallation ? 'Ya' : 'Tidak'),
+                  'Metode Penyerahan',
+                  booking.withDelivery
+                      ? 'Antar - Pasang - Jemput Toko'
+                      : 'Pick-up Sendiri di Toko',
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
@@ -98,14 +105,20 @@ class BookingConfirmationScreen extends StatelessWidget {
             _InfoCard(
               title: 'Rincian Harga',
               items: [
-                _InfoItem('Sewa Papan',
+                _InfoItem('Sewa Papan (24 Jam)',
                     CurrencyFormatter.formatIDR(booking.subtotal)),
-                if (booking.withDelivery)
-                  _InfoItem('Pengiriman',
-                      CurrencyFormatter.formatIDR(booking.deliveryFee)),
-                if (booking.withInstallation)
-                  _InfoItem('Instalasi',
-                      CurrencyFormatter.formatIDR(booking.installationFee)),
+                _InfoItem(
+                  'Pengiriman & Antar-Jemput',
+                  booking.withDelivery
+                      ? 'Gratis (Termasuk)'
+                      : 'Ambil Sendiri (Rp 0)',
+                ),
+                _InfoItem(
+                  'Pemasangan di Venue',
+                  booking.withDelivery
+                      ? 'Gratis (Termasuk)'
+                      : 'Mandiri (Rp 0)',
+                ),
               ],
               footer: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

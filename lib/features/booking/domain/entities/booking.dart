@@ -56,6 +56,8 @@ class Booking {
   final String? productImageUrl;
   final String customerId;
   final String customerName;
+  final String? customerUsername;
+  final String? customerEmail;
   final String customerPhone;
   final String eventAddress;
   final String eventMessage;
@@ -71,6 +73,7 @@ class Booking {
   final BookingStatus status;
   final DateTime createdAt;
   final DateTime? paymentDeadline;
+  final DateTime? returnedAt;
 
   const Booking({
     required this.id,
@@ -80,6 +83,8 @@ class Booking {
     this.productImageUrl,
     required this.customerId,
     required this.customerName,
+    this.customerUsername,
+    this.customerEmail,
     required this.customerPhone,
     required this.eventAddress,
     required this.eventMessage,
@@ -95,5 +100,6 @@ class Booking {
     required this.status,
     required this.createdAt,
     this.paymentDeadline,
+    this.returnedAt,
   });
 }

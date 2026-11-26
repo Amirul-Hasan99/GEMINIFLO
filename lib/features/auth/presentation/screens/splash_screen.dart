@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_logo.dart';
 import '../providers/auth_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -102,44 +103,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Logo mark
-                      Container(
-                        width: 96,
-                        height: 96,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.12),
-                          border: Border.all(
-                            color: AppColors.secondary.withValues(alpha: 0.5),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.local_florist,
-                            color: AppColors.secondary,
-                            size: 44,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      // App name
+                      const AppLogo(size: 110, isCircle: true),
+                      const SizedBox(height: 20),
                       const Text(
-                        'Geminiflo_',
+                        'GEMINIFLO_',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2.0,
+                          fontFamily: 'serif',
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Booking',
+                      const SizedBox(height: 6),
+                      const Text(
+                        'EXPRESSED WITH ELEGANCE.',
                         style: TextStyle(
-                          color: AppColors.secondary.withValues(alpha: 0.9),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                          color: AppColors.secondary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 3.0,
                         ),
                       ),

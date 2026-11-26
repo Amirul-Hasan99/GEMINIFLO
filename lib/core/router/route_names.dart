@@ -24,6 +24,9 @@ class RouteNames {
   static String orderDetailPath(String id) => '/orders/$id';
   static const String payment = '/payment/:bookingId';
   static String paymentPath(String bookingId) => '/payment/$bookingId';
+  static const String paymentProof = '/payment/:bookingId/proof';
+  static String paymentProofPath(String bookingId) =>
+      '/payment/$bookingId/proof';
   static const String profile = '/profile';
   static const String profileEdit = '/profile/edit';
   static const String addresses = '/addresses';
@@ -32,6 +35,8 @@ class RouteNames {
   static const String changePassword = '/change-password';
   static const String help = '/help';
   static const String about = '/about';
+  static const String privacyPolicy = '/privacy-policy';
+  static const String termsConditions = '/terms-conditions';
 
   // Admin
   static const String adminDashboard = '/admin/dashboard';
@@ -53,4 +58,5 @@ class RouteNames {
   static const String adminReports = '/admin/reports';
   static const String adminProfile = '/admin/profile';
   static const String adminSettings = '/admin/settings';
+  static const String adminReviews = '/admin/reviews';
 }

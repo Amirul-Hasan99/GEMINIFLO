@@ -1,43 +1,34 @@
-import 'dart:convert';
-import '../../../../core/config/app_config.dart';
-import '../../../../core/constants/app_constants.dart';
-import '../../../../core/storage/local_storage_service.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_mock_datasource.dart';
 import '../datasources/auth_remote_datasource.dart';
 import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
-  final AuthMockDataSource mockDataSource;
   final SecureStorageService secureStorage;
-  final LocalStorageService localStorage;
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
-    required this.mockDataSource,
     required this.secureStorage,
-    required this.localStorage,
   });
 
   @override
   Future<User> login({required String email, required String password}) async {
-    final Map<String, dynamic> result;
-    if (AppConfig.useMockData) {
-      result = await mockDataSource.login(email: email, password: password);
-    } else {
-      result = await remoteDataSource.login(email: email, password: password);
-    }
-
+    final result = await remoteDataSource.login(
+      email: email,
+      password: password,
+    );
     final user = result['user'] as UserModel;
-    final token = result['token'] as String;
+    await secureStorage.saveToken(result['token'] as String);
+    return user;
+  }
 
-    await secureStorage.saveToken(token);
-    await localStorage.saveUserRole(user.role);
-    await localStorage.setString(AppConstants.keyUserData, jsonEncode(user.toJson()));
-
+  @override
+  Future<User> loginWithGoogle({required String idToken}) async {
+    final result = await remoteDataSource.loginWithGoogle(idToken);
+    final user = result['user'] as UserModel;
+    await secureStorage.saveToken(result['token'] as String);
     return user;
   }
 
@@ -47,60 +38,36 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String passwordConfirmation,
+    String? username,
     String? phone,
+    String? avatar,
   }) async {
-    final Map<String, dynamic> result;
-    if (AppConfig.useMockData) {
-      result = await mockDataSource.register(
-        name: name,
-        email: email,
-        password: password,
-        passwordConfirmation: passwordConfirmation,
-        phone: phone,
-      );
-    } else {
-      result = await remoteDataSource.register(
-        name: name,
-        email: email,
-        password: password,
-        passwordConfirmation: passwordConfirmation,
-        phone: phone,
-      );
-    }
-
+    final result = await remoteDataSource.register(
+      name: name,
+      email: email,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+      username: username,
+      phone: phone,
+      avatar: avatar,
+    );
     final user = result['user'] as UserModel;
-    final token = result['token'] as String;
-
-    await secureStorage.saveToken(token);
-    await localStorage.saveUserRole(user.role);
-    await localStorage.setString(AppConstants.keyUserData, jsonEncode(user.toJson()));
-
+    await secureStorage.saveToken(result['token'] as String);
     return user;
   }
 
   @override
   Future<void> logout() async {
     try {
-      if (!AppConfig.useMockData) {
-        await remoteDataSource.logout();
-      } else {
-        await mockDataSource.logout();
-      }
-    } catch (_) {}
-
-    await secureStorage.clearAuthData();
-    await localStorage.remove(AppConstants.keyUserRole);
-    await localStorage.remove(AppConstants.keyUserData);
+      await remoteDataSource.logout();
+    } finally {
+      await secureStorage.clearAuthData();
+    }
   }
 
   @override
-  Future<void> forgotPassword(String email) async {
-    if (AppConfig.useMockData) {
-      await mockDataSource.forgotPassword(email);
-    } else {
-      await remoteDataSource.forgotPassword(email);
-    }
-  }
+  Future<void> forgotPassword(String email) =>
+      remoteDataSource.forgotPassword(email);
 
   @override
   Future<void> resetPassword({
@@ -108,46 +75,18 @@ class AuthRepositoryImpl implements AuthRepository {
     required String token,
     required String password,
     required String passwordConfirmation,
-  }) async {
-    if (AppConfig.useMockData) {
-      await mockDataSource.resetPassword(
-        email: email,
-        token: token,
-        password: password,
-        passwordConfirmation: passwordConfirmation,
-      );
-    } else {
-      await remoteDataSource.resetPassword(
-        email: email,
-        token: token,
-        password: password,
-        passwordConfirmation: passwordConfirmation,
-      );
-    }
-  }
+  }) => remoteDataSource.resetPassword(
+    email: email,
+    token: token,
+    password: password,
+    passwordConfirmation: passwordConfirmation,
+  );
 
   @override
   Future<User?> getCurrentUser() async {
-    final token = await secureStorage.getToken();
-    if (token == null) return null;
-
-    final cachedUserJson = localStorage.getString(AppConstants.keyUserData);
-    if (cachedUserJson != null) {
-      try {
-        return UserModel.fromJson(jsonDecode(cachedUserJson));
-      } catch (_) {}
-    }
-
+    if (await secureStorage.getToken() == null) return null;
     try {
-      final UserModel user;
-      if (AppConfig.useMockData) {
-        user = await mockDataSource.getProfile();
-      } else {
-        user = await remoteDataSource.getProfile();
-      }
-      await localStorage.setString(AppConstants.keyUserData, jsonEncode(user.toJson()));
-      await localStorage.saveUserRole(user.role);
-      return user;
+      return await remoteDataSource.getProfile();
     } catch (_) {
       return null;
     }
@@ -158,15 +97,15 @@ class AuthRepositoryImpl implements AuthRepository {
     required String name,
     String? phone,
     String? avatar,
-  }) async {
-    final UserModel updatedUser;
-    if (AppConfig.useMockData) {
-      updatedUser = await mockDataSource.updateProfile(name: name, phone: phone, avatar: avatar);
-    } else {
-      updatedUser = await remoteDataSource.updateProfile(name: name, phone: phone, avatar: avatar);
-    }
+  }) =>
+      remoteDataSource.updateProfile(name: name, phone: phone, avatar: avatar);
 
-    await localStorage.setString(AppConstants.keyUserData, jsonEncode(updatedUser.toJson()));
-    return updatedUser;
-  }
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) => remoteDataSource.changePassword(
+    currentPassword: currentPassword,
+    newPassword: newPassword,
+  );
 }

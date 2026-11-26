@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/widgets/app_bottom_nav.dart';
+import '../../../../core/widgets/app_logo.dart';
+import '../../../../core/widgets/product_image.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../catalog/domain/entities/product.dart';
 import '../../../catalog/presentation/providers/catalog_provider.dart';
-import '../../../catalog/presentation/widgets/product_card.dart';
+import '../../../notifications/presentation/providers/notification_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -21,317 +26,273 @@ class HomeScreen extends ConsumerWidget {
         .take(4)
         .toList();
 
-    final firstName = auth.user?.name.split(' ').first ?? 'Pengguna';
+    final user = auth.user;
+    final headerName = user?.username?.isNotEmpty == true
+        ? '@${user!.username}'
+        : user?.name.split(' ').first ?? 'Pengguna';
     final hour = DateTime.now().hour;
     final greeting = hour < 12
         ? 'Selamat Pagi'
         : hour < 17
-            ? 'Selamat Siang'
-            : 'Selamat Malam';
+        ? 'Selamat Siang'
+        : 'Selamat Malam';
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // Header
-          SliverToBoxAdapter(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF0A2B1F), Color(0xFF0F382A)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + AppSpacing.md,
-                left: AppSpacing.xl,
-                right: AppSpacing.xl,
-                bottom: AppSpacing.xl,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '$greeting,',
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.7),
-                              fontSize: 13,
-                            ),
-                          ),
-                          Text(
-                            firstName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
+                  Container(
+                    width: 46,
+                    height: 46,
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.surfaceWhite,
+                      border: Border.all(
+                        color: AppColors.secondary,
+                        width: 1.5,
                       ),
-                      const Spacer(),
-                      // Notification bell
-                      Stack(
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.notifications_outlined,
-                              color: Colors.white,
-                            ),
-                            onPressed: () =>
-                                context.push(RouteNames.notifications),
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: AppColors.secondary,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
+                    child: ClipOval(
+                      child: user?.avatar?.isNotEmpty == true
+                          ? ProductImage(
+                              source: user!.avatar,
+                              fit: BoxFit.cover,
+                            )
+                          : const AppLogo(size: 42, isCircle: true),
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  // Search bar
-                  GestureDetector(
-                    onTap: () => context.go(RouteNames.catalog),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md, vertical: 13),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          width: 1,
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$greeting,',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                        Text(
+                          headerName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        Text(
+                          user?.email ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 9,
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Stack(
+                    children: [
+                      IconButton(
+                        tooltip: 'Notifikasi',
+                        onPressed: () => context.push(RouteNames.notifications),
+                        icon: const Icon(
+                          LucideIcons.bell,
+                          color: AppColors.primary,
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.search,
-                            color: Colors.white.withValues(alpha: 0.6),
-                            size: 20,
+                      if (ref.watch(unreadNotificationsCountProvider) > 0)
+                        const Positioned(
+                          right: 10,
+                          top: 9,
+                          child: CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.secondary,
                           ),
-                          const SizedBox(width: 10),
-                          Text(
-                            'Cari papan bunga...',
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.6),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Quick actions
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Aksi Cepat',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Row(
-                    children: [
-                      _QuickAction(
-                        icon: Icons.search,
-                        label: 'Cari\nPapan',
-                        color: AppColors.primary,
-                        onTap: () => context.go(RouteNames.catalog),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      _QuickAction(
-                        icon: Icons.receipt_long_outlined,
-                        label: 'Booking\nSaya',
-                        color: AppColors.statusInfo,
-                        onTap: () => context.go(RouteNames.orders),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      _QuickAction(
-                        icon: Icons.favorite_border,
-                        label: 'Favorit\nSaya',
-                        color: AppColors.statusError,
-                        onTap: () => context.push(RouteNames.favorites),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      _QuickAction(
-                        icon: Icons.support_agent_outlined,
-                        label: 'Tanya\nAdmin',
-                        color: AppColors.secondary,
-                        onTap: () {},
-                      ),
+                        ),
                     ],
                   ),
                 ],
               ),
-            ),
-          ),
-
-          // Promo Banner
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.xl),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.primary, Color(0xFF154D39)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
+              const SizedBox(height: 8),
+              InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => context.go(RouteNames.catalog),
+                child: Container(
+                  height: 42,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderLight),
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.search, size: 19, color: AppColors.primary),
+                      SizedBox(width: 9),
+                      Text(
+                        'Cari papan bunga...',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(Icons.chevron_right, color: AppColors.textMuted),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondary.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Text(
-                              'Penawaran Spesial',
+              ),
+              const SizedBox(height: 10),
+              InkWell(
+                borderRadius: BorderRadius.circular(14),
+                onTap: () => context.go(RouteNames.catalog),
+                child: Container(
+                  height: 78,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, Color(0xFF1B6B4D)],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'LAYANAN GEMINIFLO',
                               style: TextStyle(
                                 color: AppColors.secondary,
-                                fontSize: 10,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                            SizedBox(height: 3),
+                            Text(
+                              'Antar, pasang, dan jemput gratis',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Gratis Instalasi\nuntuk Booking Pertama',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              height: 1.3,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: () => context.go(RouteNames.catalog),
-                            child: const Text(
-                              'Pesan Sekarang →',
+                            Text(
+                              'Papan bunga untuk setiap momen',
                               style: TextStyle(
-                                color: AppColors.secondary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
+                                color: Colors.white70,
+                                fontSize: 10,
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const Icon(
-                      Icons.local_florist,
-                      color: Colors.white24,
-                      size: 64,
-                    ),
-                  ],
+                      SizedBox(width: 10),
+                      Icon(
+                        Icons.local_florist,
+                        size: 34,
+                        color: AppColors.secondary,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ),
-
-          // Featured products
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.md),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              const SizedBox(height: 10),
+              Row(
                 children: [
-                  const Text(
-                    'Produk Unggulan',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+                  const Expanded(
+                    child: Text(
+                      'Pilihan untuk Anda',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => context.go(RouteNames.catalog),
+                  TextButton(
+                    onPressed: () => context.go(RouteNames.catalog),
                     child: const Text(
-                      'Lihat Semua',
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      'Lihat semua',
+                      style: TextStyle(fontSize: 11),
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-          catalogState.isLoading
-              ? const SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: 200,
-                    child: Center(
-                      child: CircularProgressIndicator(color: AppColors.primary),
-                    ),
-                  ),
-                )
-              : SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.xl),
-                  sliver: SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.62,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, i) => ProductCard(
-                        product: featuredProducts[i],
-                        onFavorite: () => ref
-                            .read(favoritesProvider.notifier)
-                            .toggleFavorite(featuredProducts[i].id),
+              Expanded(
+                child: catalogState.isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
+                      )
+                    : featuredProducts.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'Produk unggulan belum tersedia',
+                          style: TextStyle(color: AppColors.textMuted),
+                        ),
+                      )
+                    : LayoutBuilder(
+                        builder: (context, constraints) {
+                          final columns = constraints.maxWidth >= 760 ? 4 : 2;
+                          final rows = (featuredProducts.length / columns)
+                              .ceil();
+                          return GridView.builder(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: featuredProducts.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: columns,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  mainAxisExtent:
+                                      (constraints.maxHeight -
+                                          (rows - 1) * 10) /
+                                      rows,
+                                ),
+                            itemBuilder: (context, index) =>
+                                _FeaturedProductCard(
+                                  product: featuredProducts[index],
+                                  onTap: () => context.push(
+                                    RouteNames.productDetailPath(
+                                      featuredProducts[index].id,
+                                    ),
+                                  ),
+                                  onFavorite: () => ref
+                                      .read(favoritesProvider.notifier)
+                                      .toggleFavorite(
+                                        featuredProducts[index].id,
+                                      ),
+                                ),
+                          );
+                        },
                       ),
-                      childCount: featuredProducts.length,
-                    ),
-                  ),
-                ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 20)),
-        ],
+              ),
+            ],
+          ),
+        ),
       ),
       bottomNavigationBar: AppBottomNav(
         currentIndex: 0,
@@ -353,58 +314,103 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _QuickAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
+class _FeaturedProductCard extends StatelessWidget {
+  final Product product;
   final VoidCallback onTap;
+  final VoidCallback onFavorite;
 
-  const _QuickAction({
-    required this.icon,
-    required this.label,
-    required this.color,
+  const _FeaturedProductCard({
+    required this.product,
     required this.onTap,
+    required this.onFavorite,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceWhite,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderLight, width: 1),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: color, size: 20),
+  Widget build(BuildContext context) => Material(
+    color: AppColors.surfaceWhite,
+    borderRadius: BorderRadius.circular(14),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.borderLight),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: product.imageUrls.isEmpty
+                        ? const ColoredBox(
+                            color: AppColors.background,
+                            child: Icon(
+                              Icons.local_florist,
+                              color: AppColors.primary,
+                            ),
+                          )
+                        : ProductImage(
+                            source: product.imageUrls.first,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: Material(
+                      color: Colors.white.withValues(alpha: 0.92),
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        tooltip: 'Favoritkan ${product.name}',
+                        onPressed: onFavorite,
+                        visualDensity: VisualDensity.compact,
+                        constraints: const BoxConstraints.tightFor(
+                          width: 32,
+                          height: 32,
+                        ),
+                        icon: Icon(
+                          product.isFavorited
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 17,
+                          color: AppColors.statusError,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  height: 1.3,
-                ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              product.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
               ),
-            ],
-          ),
+            ),
+            Text(
+              CurrencyFormatter.formatIDR(product.pricePerDay),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
