@@ -761,6 +761,14 @@ Future<void> _googleLogin(HttpRequest request, Pool pool) async {
   if (matches.isNotEmpty) {
     user = matches.first;
     final values = user.toColumnMap();
+    if (values['role'] == 'admin') {
+      await _apiFailure(
+        request,
+        HttpStatus.forbidden,
+        'Akun admin harus masuk menggunakan username dan password admin.',
+      );
+      return;
+    }
     await pool.execute(
       Sql.named(
         'UPDATE users SET google_uid=@uid,avatar_url=COALESCE(avatar_url,@avatar) WHERE id=@id',

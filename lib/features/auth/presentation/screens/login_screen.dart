@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +10,9 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/auth_form_field.dart';
+import '../widgets/google_sign_in_web_button_stub.dart'
+    if (dart.library.js_interop) '../widgets/google_sign_in_web_button_web.dart'
+    as google_web_button;
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -72,6 +76,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(error ?? 'Login Google gagal. Coba kembali.'),
+        backgroundColor: AppColors.statusError,
+      ),
+    );
+  }
+
+  Future<void> _loginWithGoogleIdToken(String googleIdToken) async {
+    final success = await ref
+        .read(authStateProvider.notifier)
+        .loginWithGoogleIdToken(googleIdToken);
+    if (!mounted) return;
+    if (success) {
+      final auth = ref.read(authStateProvider);
+      context.go(auth.isAdmin ? RouteNames.adminDashboard : RouteNames.home);
+      return;
+    }
+    _showGoogleError(
+      ref.read(authStateProvider).errorMessage ??
+          'Login Google gagal. Coba kembali.',
+    );
+  }
+
+  void _showGoogleError(Object error) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error.toString()),
         backgroundColor: AppColors.statusError,
       ),
     );
@@ -182,10 +212,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         prefixIcon: Icons.lock_outlined,
                         textInputAction: TextInputAction.done,
                         validator: (v) {
-                          if (v == null || v.isEmpty)
+                          if (v == null || v.isEmpty) {
                             return 'Password wajib diisi';
-                          if (v.length < 3)
+                          }
+                          if (v.length < 3) {
                             return 'Password minimal 3 karakter';
+                          }
                           return null;
                         },
                       ),
@@ -243,21 +275,45 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         width: double.infinity,
                       ),
                       const SizedBox(height: AppSpacing.md),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: OutlinedButton.icon(
-                          onPressed: authState.isLoading
-                              ? null
-                              : _loginWithGoogle,
-                          icon: const Icon(Icons.g_mobiledata, size: 26),
-                          label: const Text('Masuk dengan Google'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.textPrimary,
-                            side: const BorderSide(color: AppColors.border),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                      if (kIsWeb)
+                        google_web_button.GoogleSignInWebButton(
+                          enabled: !authState.isLoading,
+                          onIdToken: _loginWithGoogleIdToken,
+                          onError: _showGoogleError,
+                        )
+                      else
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: OutlinedButton.icon(
+                            onPressed: authState.isLoading
+                                ? null
+                                : _loginWithGoogle,
+                            icon: const Text(
+                              'G',
+                              style: TextStyle(
+                                color: Color(0xFF4285F4),
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
+                            label: const Text('Masuk dengan Google'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.textPrimary,
+                              side: const BorderSide(color: AppColors.border),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: AppSpacing.xs),
+                      const Center(
+                        child: Text(
+                          'Khusus akun pelanggan dan pembooking',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 12,
                           ),
                         ),
                       ),

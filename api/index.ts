@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Pool } from '@neondatabase/serverless';
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
-import { bookingReview, catalogProducts, changeBookingStatus, createBooking, expirePendingBookings, firebaseLogin, listReviews, markBookingReturned, productAvailability } from './feature-routes';
+import { bookingReview, catalogProducts, changeBookingStatus, createBooking, expirePendingBookings, FirebaseTokenError, firebaseLogin, listReviews, markBookingReturned, productAvailability } from './feature-routes';
 
 const g = globalThis as typeof globalThis & { geminiPool?: Pool };
 const db = () => {
@@ -149,6 +149,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (e: any) {
     console.error('API request failed:', e?.message ?? e);
     const detail = e instanceof Error ? e.message : '';
+    if (e instanceof FirebaseTokenError) return fail(res, 401, detail);
     if (e?.code === '23505') return fail(res, 409, 'Data tersebut sudah digunakan.');
     if (e?.code === '23503') return fail(res, 400, 'Data terkait tidak ditemukan atau masih digunakan.');
     if (/Format|wajib|tidak valid|minimal|Tanggal|Metode pembayaran tidak tersedia|Produk tidak tersedia|Produk tidak ditemukan|Booking tidak ditemukan|Transaksi tidak ditemukan|Pelanggan tidak ditemukan|Alamat tidak ditemukan/i.test(detail)) {

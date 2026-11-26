@@ -127,6 +127,24 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
+  Future<bool> loginWithGoogleIdToken(String googleIdToken) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final firebaseToken = await GoogleAuthService.instance
+          .exchangeWebGoogleToken(googleIdToken);
+      final user = await _repository.loginWithGoogle(idToken: firebaseToken);
+      state = state.copyWith(
+        user: user,
+        isAuthenticated: true,
+        isLoading: false,
+      );
+      return true;
+    } catch (error) {
+      state = state.copyWith(isLoading: false, errorMessage: error.toString());
+      return false;
+    }
+  }
+
   Future<bool> register({
     required String name,
     required String email,

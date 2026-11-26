@@ -3,6 +3,14 @@ import { createHash, createPublicKey, randomUUID, verify } from 'node:crypto';
 const tokenId = () => `NTF-${randomUUID()}`;
 const userId = () => `USR-${randomUUID()}`;
 const sessionToken = () => randomUUID() + randomUUID();
+export const firebaseProjectId = 'geminiflo-3d7f0';
+
+export class FirebaseTokenError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'FirebaseTokenError';
+  }
+}
 
 export async function expirePendingBookings(sql: any) {
   const { rows } = await sql.query(`UPDATE bookings SET booking_status='expired' WHERE booking_status='pending_payment' AND payment_deadline<=NOW() RETURNING id,user_id,booking_code`);
@@ -11,25 +19,38 @@ export async function expirePendingBookings(sql: any) {
   }
 }
 
-async function firebaseClaims(rawToken: string) {
-  const projectId = process.env.FIREBASE_PROJECT_ID || 'geminiflo-3d7f0';
+export async function firebaseClaims(rawToken: string) {
   const parts = rawToken.split('.');
-  if (parts.length !== 3) throw new Error('Token Firebase tidak valid.');
+  if (parts.length !== 3) throw new FirebaseTokenError('Token Firebase tidak valid.');
   const decode = (part: string) => JSON.parse(Buffer.from(part, 'base64url').toString());
-  const header = decode(parts[0]);
-  const claims = decode(parts[1]);
-  if (header.alg !== 'RS256' || !header.kid) throw new Error('Token Firebase tidak valid.');
+  let header: any;
+  let claims: any;
+  try {
+    header = decode(parts[0]);
+    claims = decode(parts[1]);
+  } catch {
+    throw new FirebaseTokenError('Token Firebase tidak valid.');
+  }
+  if (header.alg !== 'RS256' || !header.kid) throw new FirebaseTokenError('Token Firebase tidak valid.');
   const certs = await firebaseSigningCertificates();
   const certificate = certs[header.kid];
   const signature = Uint8Array.from(Buffer.from(parts[2], 'base64url'));
   if (!certificate || !verify('RSA-SHA256', new TextEncoder().encode(`${parts[0]}.${parts[1]}`), createPublicKey(certificate), signature)) {
-    throw new Error('Token Firebase tidak dapat diverifikasi.');
+    throw new FirebaseTokenError('Token Firebase tidak dapat diverifikasi.');
   }
   const now = Math.floor(Date.now() / 1000);
-  if (claims.aud !== projectId || claims.iss !== `https://securetoken.google.com/${projectId}` || !claims.sub || claims.exp <= now || claims.iat > now || claims.auth_time > now) {
-    throw new Error('Sesi Google sudah tidak berlaku. Silakan masuk kembali.');
+  if (claims.aud !== firebaseProjectId || claims.iss !== `https://securetoken.google.com/${firebaseProjectId}`) {
+    throw new FirebaseTokenError('Token berasal dari proyek Firebase yang berbeda dengan GEMINIFLO.');
   }
-  if (!claims.email || claims.email_verified !== true) throw new Error('Akun Google harus memiliki email terverifikasi.');
+  if (
+    typeof claims.sub !== 'string' || !claims.sub ||
+    typeof claims.exp !== 'number' || typeof claims.iat !== 'number' ||
+    typeof claims.auth_time !== 'number' ||
+    claims.exp <= now || claims.iat > now || claims.auth_time > now
+  ) {
+    throw new FirebaseTokenError('Token Firebase tidak valid atau sudah kedaluwarsa. Silakan login kembali.');
+  }
+  if (!claims.email || claims.email_verified !== true) throw new FirebaseTokenError('Akun Google harus memiliki email terverifikasi.');
   return claims;
 }
 
@@ -52,6 +73,9 @@ export async function firebaseLogin(req: any, res: any, sql: any) {
   const existing = await sql.query('SELECT id,name,username,email,phone,role,avatar_url FROM users WHERE google_uid=$1 OR LOWER(email)=$2 ORDER BY CASE WHEN google_uid=$1 THEN 0 ELSE 1 END LIMIT 1', [claims.sub, email]);
   let user = existing.rows[0];
   if (user) {
+    if (user.role === 'admin') {
+      return res.status(403).json({ success: false, message: 'Akun admin harus masuk menggunakan username dan password admin.' });
+    }
     await sql.query('UPDATE users SET google_uid=$1, avatar_url=COALESCE(avatar_url,$2), name=CASE WHEN name IS NULL OR name=\'\' THEN $3 ELSE name END WHERE id=$4', [claims.sub, claims.picture ?? null, claims.name ?? email.split('@')[0], user.id]);
   } else {
     const id = userId();

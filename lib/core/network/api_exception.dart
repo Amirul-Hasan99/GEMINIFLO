@@ -3,11 +3,7 @@ class ApiException implements Exception {
   final int? statusCode;
   final dynamic data;
 
-  const ApiException({
-    required this.message,
-    this.statusCode,
-    this.data,
-  });
+  const ApiException({required this.message, this.statusCode, this.data});
 
   @override
   String toString() => message;
@@ -16,19 +12,24 @@ class ApiException implements Exception {
     switch (code) {
       case 400:
         return ApiException(
-          message: 'Permintaan tidak valid. Silakan periksa data yang dimasukkan.',
+          message:
+              'Permintaan tidak valid. Silakan periksa data yang dimasukkan.',
           statusCode: code,
           data: data,
         );
       case 401:
         return ApiException(
-          message: 'Sesi login telah berakhir. Silakan masuk kembali.',
+          message: data is Map && data['message'] != null
+              ? data['message'].toString()
+              : 'Sesi login telah berakhir. Silakan masuk kembali.',
           statusCode: code,
           data: data,
         );
       case 403:
         return ApiException(
-          message: 'Anda tidak memiliki hak akses untuk halaman atau tindakan ini.',
+          message: data is Map && data['message'] != null
+              ? data['message'].toString()
+              : 'Anda tidak memiliki hak akses untuk halaman atau tindakan ini.',
           statusCode: code,
           data: data,
         );
@@ -65,7 +66,8 @@ class ApiException implements Exception {
       case 502:
       case 503:
         return ApiException(
-          message: 'Terjadi kesalahan pada server. Tim kami sedang menanganinya.',
+          message:
+              'Terjadi kesalahan pada server. Tim kami sedang menanganinya.',
           statusCode: code,
           data: data,
         );
@@ -80,7 +82,8 @@ class ApiException implements Exception {
 
   factory ApiException.networkError() {
     return const ApiException(
-      message: 'Tidak ada koneksi internet. Periksa koneksi data atau Wi-Fi Anda.',
+      message:
+          'Tidak ada koneksi internet. Periksa koneksi data atau Wi-Fi Anda.',
       statusCode: null,
     );
   }

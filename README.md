@@ -13,7 +13,7 @@ Booking pelanggan disimpan ke Neon dengan user ID dari sesi login. Panel admin m
 
 ### API Vercel dan Neon
 
-API produksi dideploy sebagai Vercel Functions di `https://geminiflo-api.vercel.app/api`. `DATABASE_URL` disimpan sebagai environment variable **Sensitive** di Vercel, bukan di aplikasi Flutter atau Git. Login Google juga memerlukan `FIREBASE_PROJECT_ID` di Vercel dengan nilai `geminiflo-3d7f0` (Production, Preview, dan Development sesuai environment yang dipakai); backend memvalidasi Firebase ID token terhadap proyek tersebut. Vercel tidak memerlukan `FIREBASE_WEB_API_KEY` untuk alur login ini. Untuk menjalankan backend Dart lokal, `FIREBASE_WEB_API_KEY` tetap diperlukan. Untuk menjalankan bootstrap manual, masukkan `DATABASE_URL` ke `.env.local` yang diabaikan Git lalu jalankan `npm run db:bootstrap`; gunakan hanya saat migrasi awal yang memang diperlukan. Reset kata sandi memerlukan `RESEND_API_KEY` dan `MAIL_FROM` di Environment Variables Vercel.
+API produksi dideploy sebagai Vercel Functions di `https://geminiflo-api.vercel.app/api`. `DATABASE_URL` disimpan sebagai environment variable **Sensitive** di Vercel, bukan di aplikasi Flutter atau Git. Backend memvalidasi Firebase ID token terhadap project `geminiflo-3d7f0`, sehingga `FIREBASE_PROJECT_ID` tidak diperlukan di Vercel. Untuk menjalankan backend Dart lokal, atur `FIREBASE_WEB_API_KEY` pada `.env.local`. Untuk menjalankan bootstrap manual, masukkan `DATABASE_URL` ke `.env.local` yang diabaikan Git lalu jalankan `npm run db:bootstrap`; gunakan hanya saat migrasi awal yang memang diperlukan. Reset kata sandi memerlukan `RESEND_API_KEY` dan `MAIL_FROM` di Environment Variables Vercel.
 
 Build release Flutter otomatis memakai URL API production. Build debug tetap memakai backend lokal. Untuk mengubah URL saat build, gunakan `--dart-define=API_BASE_URL=https://geminiflo-api.vercel.app/api`.
 
@@ -53,9 +53,10 @@ Build iOS harus dijalankan pada macOS dengan Xcode.
 ### Login Google dan sinkronisasi database
 
 1. Daftarkan aplikasi Android dengan application ID `com.geminiflo.geminiflo_booking` di proyek Firebase, aktifkan provider Google pada Firebase Authentication, lalu letakkan `google-services.json` di `android/app/google-services.json`.
-2. Pastikan OAuth SHA-1/SHA-256 untuk signing key aplikasi terdaftar pada aplikasi Android Firebase. Jangan menaruh service-account private key di aplikasi Flutter.
-3. Project ID pada konfigurasi saat ini adalah `geminiflo-3d7f0`. Atur `FIREBASE_PROJECT_ID` yang sama di Vercel. Untuk backend lokal Dart, atur juga `FIREBASE_WEB_API_KEY` memakai nilai Web API key dari konfigurasi Firebase; backend lokal memverifikasi token lewat Firebase Identity Toolkit.
-4. Sebelum versi API baru dipakai di Neon, jalankan SQL pada `database/migrations/20261125_google_auth_reviews_returns.sql` melalui Neon SQL Editor. Migrasi menambahkan identitas Firebase, waktu pengembalian, tabel ulasan, dan indeks ulasan.
+2. Tambahkan SHA-1 dan SHA-256 signing key Android ke Firebase. Untuk web, tambahkan domain production Vercel ke Firebase Authentication > Settings > Authorized domains, serta origin production dan `http://localhost:7357` ke Authorized JavaScript origins pada OAuth Web Client.
+3. Jalankan `npm run web:run` untuk membuka web lokal di `http://localhost:7357`; API login memakai `https://geminiflo-api.vercel.app/api`. Jalankan `npm run web:build` untuk membuat keluaran web di `build/web` dan gunakan folder tersebut sebagai output deployment web.
+4. Project ID pada konfigurasi saat ini adalah `geminiflo-3d7f0`. Aplikasi web membaca API key dan OAuth Web Client ID dari `android/app/google-services.json`; backend Vercel memakai ID project tersebut secara tetap dan tidak membutuhkan `FIREBASE_PROJECT_ID`.
+5. Sebelum versi API baru dipakai di Neon, jalankan SQL pada `database/migrations/20261125_google_auth_reviews_returns.sql` melalui Neon SQL Editor. Migrasi menambahkan identitas Firebase, waktu pengembalian, tabel ulasan, dan indeks ulasan.
 
 Login Google menghasilkan sesi GEMINIFLO setelah token Firebase diverifikasi. Role admin tetap berasal dari akun yang sudah terdaftar di backend.
 
