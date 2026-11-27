@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Pool } from '@neondatabase/serverless';
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
-import { bookingReview, catalogProducts, changeBookingStatus, createBooking, expirePendingBookings, FirebaseTokenError, firebaseLogin, listReviews, markBookingReturned, productAvailability } from './feature-routes';
+import { bookingReview, catalogProducts, changeBookingStatus, createBooking, expirePendingBookings, FirebaseTokenError, firebaseLogin, listReviews, markBookingReturned, productAvailability } from './feature-routes.js';
 
 const g = globalThis as typeof globalThis & { geminiPool?: Pool };
 const db = () => {
